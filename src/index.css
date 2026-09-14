@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gear-mint: #5BD19B;
+  --color-gear-mint-hover: #4ec28e;
+  --color-gear-blue: #4D8EF7;
+  --color-gear-blue-hover: #3d7ee5;
+  --color-gear-dark: #0B131E;
+  --color-gear-surface: #111C2B;
+  --color-gear-card: #152234;
+  --color-gear-border: #1F324B;
+  --color-gear-border-glow: rgba(91, 209, 155, 0.25);
+
+  --font-display: 'Chakra Petch', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-brand: 'Montserrat', system-ui, sans-serif;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

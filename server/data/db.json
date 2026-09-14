@@ -1,0 +1,603 @@
+{
+  "tournaments": [
+    {
+      "title": "sample test for $",
+      "game": "Free Fire MAX",
+      "format": "Solo",
+      "organiser_name": "GearUp Official",
+      "date": "2026-09-18",
+      "time": "20:30",
+      "entry_fee": 10,
+      "prize_pool": 10000,
+      "slots_total": 100,
+      "status": "REGISTRATION_OPEN",
+      "banner_url": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=1200",
+      "map": "Bermuda , Purgatory , Kalahari",
+      "rules": "1. Mobile only, no emulators.\n2. Room details unlock 15 mins prior.\n3. Top 3 claim prizes.",
+      "room_credential": {
+        "roomId": "",
+        "roomPassword": "",
+        "isReleased": false
+      },
+      "prize_breakdown": [
+        {
+          "rank": "1st Place",
+          "prize": 5000
+        },
+        {
+          "rank": "2nd Place",
+          "prize": 3000
+        },
+        {
+          "rank": "3rd Place",
+          "prize": 2000
+        }
+      ],
+      "id": "t-1789303510060",
+      "slots_filled": 1,
+      "standings": []
+    },
+    {
+      "title": "FF Sample",
+      "game": "Free Fire MAX",
+      "format": "Solo",
+      "organiser_name": "GearUp Official",
+      "date": "2026-09-18",
+      "time": "20:30",
+      "entry_fee": 0,
+      "prize_pool": 10000,
+      "slots_total": 100,
+      "status": "REGISTRATION_OPEN",
+      "banner_url": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=1200",
+      "map": "Bermuda",
+      "rules": "1. Mobile only, no emulators.\n2. Room details unlock 15 mins prior.\n3. Top 3 claim prizes.",
+      "room_credential": {
+        "roomId": "",
+        "roomPassword": "",
+        "isReleased": false
+      },
+      "prize_breakdown": [
+        {
+          "rank": "1st Place",
+          "prize": 5000
+        },
+        {
+          "rank": "2nd Place",
+          "prize": 3000
+        },
+        {
+          "rank": "3rd Place",
+          "prize": 2000
+        }
+      ],
+      "id": "t-1789276245706",
+      "slots_filled": 0,
+      "standings": []
+    },
+    {
+      "title": "sample squad tournament",
+      "game": "BGMI",
+      "format": "Squad",
+      "organiser_name": "GearUp Official",
+      "date": "2026-09-18",
+      "time": "20:30",
+      "entry_fee": 0,
+      "prize_pool": 0,
+      "slots_total": 2,
+      "status": "ROOM_RELEASED",
+      "banner_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200",
+      "map": "Erangel",
+      "rules": "1. Mobile only, no emulators.\n2. Room details unlock 15 mins prior.\n3. Top 3 claim prizes.",
+      "room_credential": {
+        "roomId": "25021789",
+        "roomPassword": "1234",
+        "instructions": "",
+        "isReleased": true,
+        "releasedAt": "2026-09-13T06:31:56.031Z"
+      },
+      "prize_breakdown": [
+        {
+          "rank": "1st Place",
+          "prize": 0
+        },
+        {
+          "rank": "2nd Place",
+          "prize": 0
+        },
+        {
+          "rank": "3rd Place",
+          "prize": 0
+        }
+      ],
+      "id": "t-1789219239003",
+      "slots_filled": 1,
+      "standings": []
+    },
+    {
+      "title": "BGMI Sample 1",
+      "game": "BGMI",
+      "format": "Squad",
+      "organiser_name": "GearUp Official",
+      "date": "2026-09-18",
+      "time": "20:30",
+      "entry_fee": 0,
+      "prize_pool": 10000,
+      "slots_total": 100,
+      "status": "COMPLETED",
+      "banner_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200",
+      "map": "Erangel",
+      "rules": "1. Mobile only, no emulators.\n2. Room details unlock 15 mins prior.\n3. Top 3 claim prizes.",
+      "room_credential": {
+        "roomId": "1234567",
+        "roomPassword": "test123",
+        "instructions": "Join allocated squad slot within 10 mins.",
+        "isReleased": false,
+        "releasedAt": "2026-09-12T07:18:57.430Z"
+      },
+      "prize_breakdown": [
+        {
+          "rank": "1st Place",
+          "prize": 6000
+        },
+        {
+          "rank": "2nd Place",
+          "prize": 2500
+        },
+        {
+          "rank": "3rd Place",
+          "prize": 1500
+        }
+      ],
+      "id": "t-1789195005060",
+      "slots_filled": 0,
+      "standings": [],
+      "is_hidden": true
+    },
+    {
+      "id": "t-1",
+      "title": "BGMI SUNDAY CLASH SERIES 4",
+      "game": "BGMI",
+      "format": "Squad",
+      "organiser_name": "GearUp Official",
+      "date": "2026-09-13",
+      "time": "20:00",
+      "entry_fee": 0,
+      "prize_pool": 10000,
+      "slots_total": 100,
+      "slots_filled": 2,
+      "status": "COMPLETED",
+      "banner_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200",
+      "map": "Erangel",
+      "rules": "1. Standard BGMI Esports TPP Squad scoring system apply (10 pts #1, 1 pt per kill).\n2. Emulators and iPad views are strictly prohibited. Mobile devices only.\n3. Hackers/cheaters will face a lifetime ban and forfeit prizes.\n4. Room credentials will unlock in this portal 15 minutes before the match start time.",
+      "room_credential": {
+        "roomId": "BGMI-ROOM-99",
+        "roomPassword": "GEARUP#PRO#2026",
+        "instructions": "Enter within 10 minutes slot 7",
+        "isReleased": true,
+        "releasedAt": "2026-09-12T04:56:29.154Z"
+      },
+      "prize_breakdown": [
+        {
+          "rank": "1st Place",
+          "prize": 5000
+        },
+        {
+          "rank": "2nd Place",
+          "prize": 3000
+        },
+        {
+          "rank": "3rd Place",
+          "prize": 2000
+        }
+      ],
+      "standings": [],
+      "is_hidden": true
+    }
+  ],
+  "registrations": [
+    {
+      "id": "reg-1789305962035",
+      "tournament_id": "t-1789303510060",
+      "tournament_title": "sample test for $",
+      "game": "Free Fire MAX",
+      "user_id": "u-1789203528850-cy93",
+      "email": "srisaisaketh999@gmail.com",
+      "player_ign": "SakethMVP",
+      "player_uid": "555555",
+      "phone": "6303134462",
+      "teammates": [],
+      "registered_at": "2026-09-13T13:26:02.035Z",
+      "status": "CONFIRMED"
+    },
+    {
+      "id": "reg-1789219310329",
+      "tournament_id": "t-1789219239003",
+      "tournament_title": "sample squad tournament",
+      "game": "BGMI",
+      "user_id": "u-1789203528850-cy93",
+      "email": "srisaisaketh999@gmail.com",
+      "player_ign": "SakethMVP",
+      "player_uid": "1",
+      "phone": "6303134462",
+      "team_name": "the mvps",
+      "teammates": [
+        {
+          "name": "p2",
+          "uid": "2"
+        },
+        {
+          "name": "p3",
+          "uid": "3"
+        },
+        {
+          "name": "p4",
+          "uid": "4"
+        }
+      ],
+      "registered_at": "2026-09-12T13:21:50.329Z",
+      "status": "CONFIRMED"
+    },
+    {
+      "id": "reg-1789218852705",
+      "tournament_id": "t-1",
+      "tournament_title": "BGMI SUNDAY CLASH SERIES 4",
+      "game": "BGMI",
+      "user_id": "test-squad-leader-1789218852699",
+      "email": "mortal@example.com",
+      "player_ign": "SoulMortaL",
+      "player_uid": "519284710",
+      "phone": "9876543210",
+      "team_name": "Team SouL",
+      "teammates": [
+        {
+          "name": "SoulViper",
+          "uid": "519284711"
+        },
+        {
+          "name": "SoulRegaltos",
+          "uid": "519284712"
+        },
+        {
+          "name": "SoulAman",
+          "uid": "519284713"
+        }
+      ],
+      "registered_at": "2026-09-12T13:14:12.705Z",
+      "status": "CONFIRMED"
+    },
+    {
+      "id": "reg-1789206450484",
+      "tournament_id": "t-1",
+      "tournament_title": "BGMI SUNDAY CLASH SERIES 4",
+      "game": "BGMI",
+      "user_id": "u-1789203528850-cy93",
+      "email": "srisaisaketh999@gmail.com",
+      "player_ign": "SakethMVP",
+      "player_uid": "98889",
+      "phone": "6303134462",
+      "team_name": "test",
+      "registered_at": "2026-09-12T09:47:30.485Z",
+      "status": "CONFIRMED"
+    }
+  ],
+  "chat_messages": [
+    {
+      "id": "msg-1789206535208-nxlk",
+      "tournament_id": "t-1",
+      "user_id": "u-admin-1",
+      "username": "Esports Admin",
+      "role": "ORGANISER",
+      "message": "📢 [OFFICIAL ROOM UNLOCK] Room ID: BGMI-ROOM-99 | Password: GEARUP#PRO#2026 | Instructions: Enter within 10 minutes slot 7. Please join the lobby!",
+      "timestamp": "2026-09-12T09:48:55.208Z",
+      "is_announcement": true
+    },
+    {
+      "id": "msg-1789206535630-q231",
+      "tournament_id": "t-1",
+      "user_id": "u-admin-1",
+      "username": "Esports Admin",
+      "role": "ORGANISER",
+      "message": "📢 [OFFICIAL ROOM UNLOCK] Room ID: BGMI-ROOM-99 | Password: GEARUP#PRO#2026 | Instructions: Enter within 10 minutes slot 7. Please join the lobby!",
+      "timestamp": "2026-09-12T09:48:55.630Z",
+      "is_announcement": true
+    },
+    {
+      "id": "msg-1789276319707-69ax",
+      "tournament_id": "t-1789219239003",
+      "user_id": "u-1789203528850-cy93",
+      "username": "SakethMVP",
+      "role": "PLAYER",
+      "message": "hi",
+      "timestamp": "2026-09-13T05:11:59.707Z",
+      "is_announcement": false
+    },
+    {
+      "id": "msg-1789276369432-30fx",
+      "tournament_id": "t-1789219239003",
+      "user_id": "u-admin-1",
+      "username": "Esports Admin",
+      "role": "ADMIN",
+      "message": "Slot Confirmed 👍",
+      "timestamp": "2026-09-13T05:12:49.432Z",
+      "is_announcement": false
+    },
+    {
+      "id": "msg-1789281116032-5gqq",
+      "tournament_id": "t-1789219239003",
+      "user_id": "u-admin-1",
+      "username": "Esports Admin",
+      "role": "ORGANISER",
+      "message": "📢 [OFFICIAL ROOM UNLOCK] Room ID: 25021789 | Password: 1234. Please join the lobby!",
+      "timestamp": "2026-09-13T06:31:56.031Z",
+      "is_announcement": true
+    },
+    {
+      "id": "msg-1789281180203-h28o",
+      "tournament_id": "t-1789219239003",
+      "user_id": "u-1789203528850-cy93",
+      "username": "SakethMVP",
+      "role": "PLAYER",
+      "message": "Ready! 🔥",
+      "timestamp": "2026-09-13T06:33:00.204Z",
+      "is_announcement": false
+    }
+  ],
+  "wallets": {
+    "u-admin-1": {
+      "balance": 0,
+      "transactions": []
+    },
+    "u-1789203528850-cy93": {
+      "balance": 0,
+      "transactions": [
+        {
+          "id": "tx-1789305962035",
+          "user_id": "u-1789203528850-cy93",
+          "type": "ENTRY_FEE",
+          "amount": 10,
+          "description": "Entry Fee: sample test for $",
+          "timestamp": "2026-09-13T13:26:02.035Z",
+          "status": "COMPLETED"
+        },
+        {
+          "id": "tx-1789305935355",
+          "user_id": "u-1789203528850-cy93",
+          "type": "DEPOSIT",
+          "amount": 10,
+          "description": "UPI QR Deposit (UTR: 352279596145)",
+          "timestamp": "2026-09-13T13:25:35.355Z",
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    "u-1789208256759-bb9l": {
+      "balance": 0,
+      "transactions": []
+    },
+    "u-organiser-1": {
+      "balance": 350,
+      "transactions": []
+    },
+    "requests": {
+      "balance": 350,
+      "transactions": []
+    },
+    "u1": {
+      "balance": 250,
+      "transactions": [
+        {
+          "id": "tx-1789217322907",
+          "user_id": "u1",
+          "type": "DEPOSIT",
+          "amount": 250,
+          "description": "UPI QR Deposit (UTR: 123456789012)",
+          "timestamp": "2026-09-12T12:48:42.907Z",
+          "status": "COMPLETED"
+        }
+      ]
+    }
+  },
+  "users": [
+    {
+      "id": "u-1789208256759-bb9l",
+      "username": "Sahithi",
+      "email": "sahithinidasanametla762@gmail.com",
+      "password": "Sahithi_762",
+      "role": "PLAYER",
+      "is_admin": false,
+      "in_game_name": "Sahithi",
+      "phone": "",
+      "wallet_balance": 0
+    },
+    {
+      "id": "u-1789203528850-cy93",
+      "username": "Sri Sai Saketh",
+      "email": "srisaisaketh999@gmail.com",
+      "password": "Saketh999",
+      "role": "PLAYER",
+      "is_admin": false,
+      "in_game_name": "SakethMVP",
+      "phone": "6303134462",
+      "wallet_balance": 0
+    },
+    {
+      "id": "u-admin-1",
+      "username": "Esports Admin",
+      "email": "gearupesportsofficial@gmail.com",
+      "role": "ADMIN",
+      "is_admin": true,
+      "wallet_balance": 0,
+      "password": "Saketh?999"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1789217374953",
+      "user_id": "u2",
+      "tournament_id": "",
+      "tournament_title": "GearUp Wallet",
+      "game": "System",
+      "type": "SYSTEM",
+      "title": "Deposit Request Declined",
+      "message": "Your deposit request for ₹100 (UTR: 123456789013) could not be verified: Invalid or forged UTR receipt. Please check your transaction details or contact support.",
+      "timestamp": "2026-09-12T12:49:34.953Z",
+      "read": false
+    },
+    {
+      "id": "notif-1789217322907",
+      "user_id": "u1",
+      "tournament_id": "",
+      "tournament_title": "GearUp Wallet",
+      "game": "System",
+      "type": "SYSTEM",
+      "title": "Deposit Approved! ₹250 Credited",
+      "message": "Your deposit of ₹250 (UTR: 123456789012) has been verified and credited to your wallet balance. You are ready to join matches!",
+      "timestamp": "2026-09-12T12:48:42.907Z",
+      "read": false
+    }
+  ],
+  "sent_emails": [
+    {
+      "id": "email-1789306254537-abugfe",
+      "type": "TOURNAMENT_REGISTRATION",
+      "recipient": "srisaisaketh999@gmail.com",
+      "subject": "🎮 Registration Confirmed: sample test for $ | GearUp Esports",
+      "tournament_id": "t-1789303510060",
+      "tournament_title": "sample test for $",
+      "player_ign": "SakethMVP",
+      "timestamp": "2026-09-13T13:30:54.537Z",
+      "preview_url": null,
+      "message_id": "err-1789306254537",
+      "status": "FAILED",
+      "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>🎮 Registration Confirmed: sample test for $ | GearUp Esports</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-color: #080D14;\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n      color: #E2E8F0;\n    }\n    .wrapper {\n      width: 100%;\n      background-color: #080D14;\n      padding: 30px 10px;\n      box-sizing: border-box;\n    }\n    .container {\n      max-width: 600px;\n      margin: 0 auto;\n      background-color: #0F1A28;\n      border: 1px solid #1F324B;\n      border-radius: 12px;\n      overflow: hidden;\n      box-shadow: 0 10px 25px rgba(0,0,0,0.5);\n    }\n    .header {\n      background: linear-gradient(135deg, #111C2B 0%, #0F253E 100%);\n      padding: 24px;\n      text-align: center;\n      border-bottom: 2px solid #5BD19B;\n    }\n    .brand {\n      font-size: 24px;\n      font-weight: 900;\n      letter-spacing: 2px;\n      text-transform: uppercase;\n      color: #FFFFFF;\n      margin: 0;\n    }\n    .brand span {\n      color: #5BD19B;\n    }\n    .badge {\n      display: inline-block;\n      margin-top: 10px;\n      padding: 5px 14px;\n      font-size: 11px;\n      font-weight: 800;\n      text-transform: uppercase;\n      letter-spacing: 1.5px;\n      background-color: rgba(91, 209, 155, 0.15);\n      border: 1px solid #5BD19B;\n      color: #5BD19B;\n      border-radius: 20px;\n    }\n    .body {\n      padding: 28px 24px;\n    }\n    .info-card {\n      background-color: #0B131E;\n      border: 1px solid #1F324B;\n      border-radius: 8px;\n      padding: 18px;\n      margin: 18px 0;\n    }\n    .grid-table {\n      width: 100%;\n      border-collapse: collapse;\n    }\n    .grid-table td {\n      padding: 8px 6px;\n      font-size: 13px;\n      vertical-align: top;\n    }\n    .label {\n      color: #94A3B8;\n      font-weight: 600;\n      text-transform: uppercase;\n      font-size: 11px;\n      letter-spacing: 0.5px;\n    }\n    .val {\n      color: #FFFFFF;\n      font-weight: 700;\n    }\n    .val-highlight {\n      color: #5BD19B;\n      font-weight: 800;\n    }\n    .notice-box {\n      background-color: rgba(56, 189, 248, 0.08);\n      border-left: 4px solid #38BDF8;\n      padding: 14px 16px;\n      border-radius: 4px;\n      margin: 20px 0;\n      font-size: 13px;\n      line-height: 1.5;\n      color: #BAE6FD;\n    }\n    .footer {\n      background-color: #0B131E;\n      padding: 20px;\n      text-align: center;\n      border-top: 1px solid #1F324B;\n      font-size: 12px;\n      color: #64748B;\n    }\n    .btn {\n      display: inline-block;\n      background-color: #5BD19B;\n      color: #0B131E !important;\n      font-weight: 800;\n      text-transform: uppercase;\n      font-size: 13px;\n      letter-spacing: 1px;\n      padding: 12px 26px;\n      border-radius: 6px;\n      text-decoration: none;\n      margin: 10px 0;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"wrapper\">\n    <div class=\"container\">\n      <div class=\"header\">\n        <h1 class=\"brand\">GEAR<span>UP</span> ESPORTS</h1>\n        <div class=\"badge\">REGISTRATION CONFIRMED</div>\n      </div>\n      <div class=\"body\">\n        \n    <h2 style=\"color:#FFFFFF;margin-top:0;font-size:20px;font-weight:800;text-transform:uppercase;\">\n      Match Slot Reserved!\n    </h2>\n    <p style=\"font-size:14px;line-height:1.6;color:#CBD5E1;\">\n      Hey <strong>SakethMVP</strong>, your registration for <strong>sample test for $</strong> has been successfully confirmed. Get ready for battle!\n    </p>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#5BD19B;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Tournament Specifications\n      </div>\n      <table class=\"grid-table\">\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Tournament:</td>\n          <td class=\"val\">sample test for $</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Game & Format:</td>\n          <td class=\"val\"><span class=\"val-highlight\">Free Fire MAX</span> • Solo</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Match Date:</td>\n          <td class=\"val\">2026-09-18</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Kickoff Time:</td>\n          <td class=\"val\">20:30 IST</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Map:</td>\n          <td class=\"val\">Bermuda , Purgatory , Kalahari</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Prize Pool:</td>\n          <td class=\"val-highlight\">₹10,000</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Organiser:</td>\n          <td class=\"val\">GearUp Official</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#38BDF8;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Your Player Details\n      </div>\n      <table class=\"grid-table\">\n        \n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Leader (IGN):</td>\n          <td class=\"val\">SakethMVP</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Leader UID:</td>\n          <td class=\"val\">555555</td>\n        </tr>\n        \n        <tr><td class=\"label\">Contact Phone:</td><td class=\"val\">6303134462</td></tr>\n        <tr>\n          <td class=\"label\">Confirmation Status:</td>\n          <td class=\"val\" style=\"color:#5BD19B;\">CONFIRMED (Slot Booked)</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"notice-box\">\n      <strong>⚠️ HOW TO ACCESS ROOM ID & PASSWORD:</strong><br>\n      The custom match credentials (Room ID and Password) will unlock <strong>15 minutes prior to match start (20:30)</strong>.\n      You can access the credentials directly via:\n      <ul style=\"margin:8px 0 0 18px;padding:0;\">\n        <li>Your GearUp Dashboard & Notification Center bell</li>\n        <li>The Tournament Details page under the \"Room ID & Pass\" tab</li>\n        <li>Match lobby live announcements</li>\n      </ul>\n    </div>\n\n    <div style=\"text-align:center;margin-top:24px;\">\n      <a href=\"http://localhost:5173\" class=\"btn\" target=\"_blank\">Open GearUp Portal</a>\n    </div>\n  \n      </div>\n      <div class=\"footer\">\n        <p style=\"margin:0 0 6px 0;\">This is an automated confirmation sent by <strong>GearUp Esports Platform</strong>.</p>\n        <p style=\"margin:0;\">Need assistance? Reach out to support at <a href=\"mailto:\" style=\"color:#5BD19B;text-decoration:none;\">gearupesportsofficial@gmail.com</a></p>\n      </div>\n    </div>\n  </div>\n</body>\n</html>"
+    },
+    {
+      "id": "email-1789219320869-vipyum",
+      "type": "TOURNAMENT_REGISTRATION",
+      "recipient": "srisaisaketh999@gmail.com",
+      "subject": "🎮 Registration Confirmed: sample squad tournament | GearUp Esports",
+      "tournament_id": "t-1789219239003",
+      "tournament_title": "sample squad tournament",
+      "player_ign": "SakethMVP",
+      "timestamp": "2026-09-12T13:22:00.869Z",
+      "preview_url": null,
+      "message_id": "<05ba73a4-84ff-6005-f771-eed6682b9d4a@localhost>",
+      "status": "SENT",
+      "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>🎮 Registration Confirmed: sample squad tournament | GearUp Esports</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-color: #080D14;\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n      color: #E2E8F0;\n    }\n    .wrapper {\n      width: 100%;\n      background-color: #080D14;\n      padding: 30px 10px;\n      box-sizing: border-box;\n    }\n    .container {\n      max-width: 600px;\n      margin: 0 auto;\n      background-color: #0F1A28;\n      border: 1px solid #1F324B;\n      border-radius: 12px;\n      overflow: hidden;\n      box-shadow: 0 10px 25px rgba(0,0,0,0.5);\n    }\n    .header {\n      background: linear-gradient(135deg, #111C2B 0%, #0F253E 100%);\n      padding: 24px;\n      text-align: center;\n      border-bottom: 2px solid #5BD19B;\n    }\n    .brand {\n      font-size: 24px;\n      font-weight: 900;\n      letter-spacing: 2px;\n      text-transform: uppercase;\n      color: #FFFFFF;\n      margin: 0;\n    }\n    .brand span {\n      color: #5BD19B;\n    }\n    .badge {\n      display: inline-block;\n      margin-top: 10px;\n      padding: 5px 14px;\n      font-size: 11px;\n      font-weight: 800;\n      text-transform: uppercase;\n      letter-spacing: 1.5px;\n      background-color: rgba(91, 209, 155, 0.15);\n      border: 1px solid #5BD19B;\n      color: #5BD19B;\n      border-radius: 20px;\n    }\n    .body {\n      padding: 28px 24px;\n    }\n    .info-card {\n      background-color: #0B131E;\n      border: 1px solid #1F324B;\n      border-radius: 8px;\n      padding: 18px;\n      margin: 18px 0;\n    }\n    .grid-table {\n      width: 100%;\n      border-collapse: collapse;\n    }\n    .grid-table td {\n      padding: 8px 6px;\n      font-size: 13px;\n      vertical-align: top;\n    }\n    .label {\n      color: #94A3B8;\n      font-weight: 600;\n      text-transform: uppercase;\n      font-size: 11px;\n      letter-spacing: 0.5px;\n    }\n    .val {\n      color: #FFFFFF;\n      font-weight: 700;\n    }\n    .val-highlight {\n      color: #5BD19B;\n      font-weight: 800;\n    }\n    .notice-box {\n      background-color: rgba(56, 189, 248, 0.08);\n      border-left: 4px solid #38BDF8;\n      padding: 14px 16px;\n      border-radius: 4px;\n      margin: 20px 0;\n      font-size: 13px;\n      line-height: 1.5;\n      color: #BAE6FD;\n    }\n    .footer {\n      background-color: #0B131E;\n      padding: 20px;\n      text-align: center;\n      border-top: 1px solid #1F324B;\n      font-size: 12px;\n      color: #64748B;\n    }\n    .btn {\n      display: inline-block;\n      background-color: #5BD19B;\n      color: #0B131E !important;\n      font-weight: 800;\n      text-transform: uppercase;\n      font-size: 13px;\n      letter-spacing: 1px;\n      padding: 12px 26px;\n      border-radius: 6px;\n      text-decoration: none;\n      margin: 10px 0;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"wrapper\">\n    <div class=\"container\">\n      <div class=\"header\">\n        <h1 class=\"brand\">GEAR<span>UP</span> ESPORTS</h1>\n        <div class=\"badge\">REGISTRATION CONFIRMED</div>\n      </div>\n      <div class=\"body\">\n        \n    <h2 style=\"color:#FFFFFF;margin-top:0;font-size:20px;font-weight:800;text-transform:uppercase;\">\n      Match Slot Reserved!\n    </h2>\n    <p style=\"font-size:14px;line-height:1.6;color:#CBD5E1;\">\n      Hey <strong>SakethMVP</strong>, your registration for <strong>sample squad tournament</strong> has been successfully confirmed. Get ready for battle!\n    </p>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#5BD19B;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Tournament Specifications\n      </div>\n      <table class=\"grid-table\">\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Tournament:</td>\n          <td class=\"val\">sample squad tournament</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Game & Format:</td>\n          <td class=\"val\"><span class=\"val-highlight\">BGMI</span> • Squad</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Match Date:</td>\n          <td class=\"val\">2026-09-18</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Kickoff Time:</td>\n          <td class=\"val\">20:30 IST</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Map:</td>\n          <td class=\"val\">Erangel</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Prize Pool:</td>\n          <td class=\"val-highlight\">₹0</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Organiser:</td>\n          <td class=\"val\">GearUp Official</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#38BDF8;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Your Player Details\n      </div>\n      <table class=\"grid-table\">\n        <tr><td class=\"label\" style=\"width:35%;\">Team Name:</td><td class=\"val\" style=\"font-weight:bold;color:#5BD19B;\">the mvps</td></tr>\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Leader (IGN):</td>\n          <td class=\"val\">SakethMVP</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Leader UID:</td>\n          <td class=\"val\">1</td>\n        </tr>\n        \n        <tr>\n          <td class=\"label\">Teammates:</td>\n          <td class=\"val\">P2: p2 (UID: 2)<br>P3: p3 (UID: 3)<br>P4: p4 (UID: 4)</td>\n        </tr>\n        <tr><td class=\"label\">Contact Phone:</td><td class=\"val\">6303134462</td></tr>\n        <tr>\n          <td class=\"label\">Confirmation Status:</td>\n          <td class=\"val\" style=\"color:#5BD19B;\">CONFIRMED (Slot Booked)</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"notice-box\">\n      <strong>⚠️ HOW TO ACCESS ROOM ID & PASSWORD:</strong><br>\n      The custom match credentials (Room ID and Password) will unlock <strong>15 minutes prior to match start (20:30)</strong>.\n      You can access the credentials directly via:\n      <ul style=\"margin:8px 0 0 18px;padding:0;\">\n        <li>Your GearUp Dashboard & Notification Center bell</li>\n        <li>The Tournament Details page under the \"Room ID & Pass\" tab</li>\n        <li>Match lobby live announcements</li>\n      </ul>\n    </div>\n\n    <div style=\"text-align:center;margin-top:24px;\">\n      <a href=\"http://localhost:5173\" class=\"btn\" target=\"_blank\">Open GearUp Portal</a>\n    </div>\n  \n      </div>\n      <div class=\"footer\">\n        <p style=\"margin:0 0 6px 0;\">This is an automated confirmation sent by <strong>GearUp Esports Platform</strong>.</p>\n        <p style=\"margin:0;\">Need assistance? Reach out to support at <a href=\"mailto:support@gearup.gg\" style=\"color:#5BD19B;text-decoration:none;\">support@gearup.gg</a></p>\n      </div>\n    </div>\n  </div>\n</body>\n</html>"
+    },
+    {
+      "id": "email-1789218858247-pq2hdr",
+      "type": "TOURNAMENT_REGISTRATION",
+      "recipient": "mortal@example.com",
+      "subject": "🎮 Registration Confirmed: BGMI SUNDAY CLASH SERIES 4 | GearUp Esports",
+      "tournament_id": "t-1",
+      "tournament_title": "BGMI SUNDAY CLASH SERIES 4",
+      "player_ign": "SoulMortaL",
+      "timestamp": "2026-09-12T13:14:18.247Z",
+      "preview_url": null,
+      "message_id": "<edcc9e45-29a8-cc50-274a-2af1fc68846a@localhost>",
+      "status": "SENT",
+      "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>🎮 Registration Confirmed: BGMI SUNDAY CLASH SERIES 4 | GearUp Esports</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-color: #080D14;\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n      color: #E2E8F0;\n    }\n    .wrapper {\n      width: 100%;\n      background-color: #080D14;\n      padding: 30px 10px;\n      box-sizing: border-box;\n    }\n    .container {\n      max-width: 600px;\n      margin: 0 auto;\n      background-color: #0F1A28;\n      border: 1px solid #1F324B;\n      border-radius: 12px;\n      overflow: hidden;\n      box-shadow: 0 10px 25px rgba(0,0,0,0.5);\n    }\n    .header {\n      background: linear-gradient(135deg, #111C2B 0%, #0F253E 100%);\n      padding: 24px;\n      text-align: center;\n      border-bottom: 2px solid #5BD19B;\n    }\n    .brand {\n      font-size: 24px;\n      font-weight: 900;\n      letter-spacing: 2px;\n      text-transform: uppercase;\n      color: #FFFFFF;\n      margin: 0;\n    }\n    .brand span {\n      color: #5BD19B;\n    }\n    .badge {\n      display: inline-block;\n      margin-top: 10px;\n      padding: 5px 14px;\n      font-size: 11px;\n      font-weight: 800;\n      text-transform: uppercase;\n      letter-spacing: 1.5px;\n      background-color: rgba(91, 209, 155, 0.15);\n      border: 1px solid #5BD19B;\n      color: #5BD19B;\n      border-radius: 20px;\n    }\n    .body {\n      padding: 28px 24px;\n    }\n    .info-card {\n      background-color: #0B131E;\n      border: 1px solid #1F324B;\n      border-radius: 8px;\n      padding: 18px;\n      margin: 18px 0;\n    }\n    .grid-table {\n      width: 100%;\n      border-collapse: collapse;\n    }\n    .grid-table td {\n      padding: 8px 6px;\n      font-size: 13px;\n      vertical-align: top;\n    }\n    .label {\n      color: #94A3B8;\n      font-weight: 600;\n      text-transform: uppercase;\n      font-size: 11px;\n      letter-spacing: 0.5px;\n    }\n    .val {\n      color: #FFFFFF;\n      font-weight: 700;\n    }\n    .val-highlight {\n      color: #5BD19B;\n      font-weight: 800;\n    }\n    .notice-box {\n      background-color: rgba(56, 189, 248, 0.08);\n      border-left: 4px solid #38BDF8;\n      padding: 14px 16px;\n      border-radius: 4px;\n      margin: 20px 0;\n      font-size: 13px;\n      line-height: 1.5;\n      color: #BAE6FD;\n    }\n    .footer {\n      background-color: #0B131E;\n      padding: 20px;\n      text-align: center;\n      border-top: 1px solid #1F324B;\n      font-size: 12px;\n      color: #64748B;\n    }\n    .btn {\n      display: inline-block;\n      background-color: #5BD19B;\n      color: #0B131E !important;\n      font-weight: 800;\n      text-transform: uppercase;\n      font-size: 13px;\n      letter-spacing: 1px;\n      padding: 12px 26px;\n      border-radius: 6px;\n      text-decoration: none;\n      margin: 10px 0;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"wrapper\">\n    <div class=\"container\">\n      <div class=\"header\">\n        <h1 class=\"brand\">GEAR<span>UP</span> ESPORTS</h1>\n        <div class=\"badge\">REGISTRATION CONFIRMED</div>\n      </div>\n      <div class=\"body\">\n        \n    <h2 style=\"color:#FFFFFF;margin-top:0;font-size:20px;font-weight:800;text-transform:uppercase;\">\n      Match Slot Reserved!\n    </h2>\n    <p style=\"font-size:14px;line-height:1.6;color:#CBD5E1;\">\n      Hey <strong>SoulMortaL</strong>, your registration for <strong>BGMI SUNDAY CLASH SERIES 4</strong> has been successfully confirmed. Get ready for battle!\n    </p>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#5BD19B;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Tournament Specifications\n      </div>\n      <table class=\"grid-table\">\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Tournament:</td>\n          <td class=\"val\">BGMI SUNDAY CLASH SERIES 4</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Game & Format:</td>\n          <td class=\"val\"><span class=\"val-highlight\">BGMI</span> • Squad</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Match Date:</td>\n          <td class=\"val\">2026-09-13</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Kickoff Time:</td>\n          <td class=\"val\">20:00 IST</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Map:</td>\n          <td class=\"val\">Erangel</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Prize Pool:</td>\n          <td class=\"val-highlight\">₹10,000</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Organiser:</td>\n          <td class=\"val\">GearUp Official</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#38BDF8;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Your Player Details\n      </div>\n      <table class=\"grid-table\">\n        <tr><td class=\"label\" style=\"width:35%;\">Team Name:</td><td class=\"val\" style=\"font-weight:bold;color:#5BD19B;\">Team SouL</td></tr>\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Leader (IGN):</td>\n          <td class=\"val\">SoulMortaL</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Leader UID:</td>\n          <td class=\"val\">519284710</td>\n        </tr>\n        \n        <tr>\n          <td class=\"label\">Teammates:</td>\n          <td class=\"val\">P2: SoulViper (UID: 519284711)<br>P3: SoulRegaltos (UID: 519284712)<br>P4: SoulAman (UID: 519284713)</td>\n        </tr>\n        <tr><td class=\"label\">Contact Phone:</td><td class=\"val\">9876543210</td></tr>\n        <tr>\n          <td class=\"label\">Confirmation Status:</td>\n          <td class=\"val\" style=\"color:#5BD19B;\">CONFIRMED (Slot Booked)</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"notice-box\">\n      <strong>⚠️ HOW TO ACCESS ROOM ID & PASSWORD:</strong><br>\n      The custom match credentials (Room ID and Password) will unlock <strong>15 minutes prior to match start (20:00)</strong>.\n      You can access the credentials directly via:\n      <ul style=\"margin:8px 0 0 18px;padding:0;\">\n        <li>Your GearUp Dashboard & Notification Center bell</li>\n        <li>The Tournament Details page under the \"Room ID & Pass\" tab</li>\n        <li>Match lobby live announcements</li>\n      </ul>\n    </div>\n\n    <div style=\"text-align:center;margin-top:24px;\">\n      <a href=\"http://localhost:5173\" class=\"btn\" target=\"_blank\">Open GearUp Portal</a>\n    </div>\n  \n      </div>\n      <div class=\"footer\">\n        <p style=\"margin:0 0 6px 0;\">This is an automated confirmation sent by <strong>GearUp Esports Platform</strong>.</p>\n        <p style=\"margin:0;\">Need assistance? Reach out to support at <a href=\"mailto:support@gearup.gg\" style=\"color:#5BD19B;text-decoration:none;\">support@gearup.gg</a></p>\n      </div>\n    </div>\n  </div>\n</body>\n</html>"
+    },
+    {
+      "id": "email-1789208259745-6uis8m",
+      "type": "ACCOUNT_REGISTRATION",
+      "recipient": "sahithinidasanametla762@gmail.com",
+      "subject": "🔥 Welcome to GearUp Esports - Account Successfully Registered!",
+      "username": "Sahithi",
+      "timestamp": "2026-09-12T10:17:39.745Z",
+      "preview_url": null,
+      "message_id": "<8476bbae-f920-5950-96ea-b4e8d1f93499@gmail.com>",
+      "status": "SENT",
+      "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>🔥 Welcome to GearUp Esports - Account Successfully Registered!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-color: #080D14;\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n      color: #E2E8F0;\n    }\n    .wrapper {\n      width: 100%;\n      background-color: #080D14;\n      padding: 30px 10px;\n      box-sizing: border-box;\n    }\n    .container {\n      max-width: 600px;\n      margin: 0 auto;\n      background-color: #0F1A28;\n      border: 1px solid #1F324B;\n      border-radius: 12px;\n      overflow: hidden;\n      box-shadow: 0 10px 25px rgba(0,0,0,0.5);\n    }\n    .header {\n      background: linear-gradient(135deg, #111C2B 0%, #0F253E 100%);\n      padding: 24px;\n      text-align: center;\n      border-bottom: 2px solid #5BD19B;\n    }\n    .brand {\n      font-size: 24px;\n      font-weight: 900;\n      letter-spacing: 2px;\n      text-transform: uppercase;\n      color: #FFFFFF;\n      margin: 0;\n    }\n    .brand span {\n      color: #5BD19B;\n    }\n    .badge {\n      display: inline-block;\n      margin-top: 10px;\n      padding: 5px 14px;\n      font-size: 11px;\n      font-weight: 800;\n      text-transform: uppercase;\n      letter-spacing: 1.5px;\n      background-color: rgba(91, 209, 155, 0.15);\n      border: 1px solid #5BD19B;\n      color: #5BD19B;\n      border-radius: 20px;\n    }\n    .body {\n      padding: 28px 24px;\n    }\n    .info-card {\n      background-color: #0B131E;\n      border: 1px solid #1F324B;\n      border-radius: 8px;\n      padding: 18px;\n      margin: 18px 0;\n    }\n    .grid-table {\n      width: 100%;\n      border-collapse: collapse;\n    }\n    .grid-table td {\n      padding: 8px 6px;\n      font-size: 13px;\n      vertical-align: top;\n    }\n    .label {\n      color: #94A3B8;\n      font-weight: 600;\n      text-transform: uppercase;\n      font-size: 11px;\n      letter-spacing: 0.5px;\n    }\n    .val {\n      color: #FFFFFF;\n      font-weight: 700;\n    }\n    .val-highlight {\n      color: #5BD19B;\n      font-weight: 800;\n    }\n    .notice-box {\n      background-color: rgba(56, 189, 248, 0.08);\n      border-left: 4px solid #38BDF8;\n      padding: 14px 16px;\n      border-radius: 4px;\n      margin: 20px 0;\n      font-size: 13px;\n      line-height: 1.5;\n      color: #BAE6FD;\n    }\n    .footer {\n      background-color: #0B131E;\n      padding: 20px;\n      text-align: center;\n      border-top: 1px solid #1F324B;\n      font-size: 12px;\n      color: #64748B;\n    }\n    .btn {\n      display: inline-block;\n      background-color: #5BD19B;\n      color: #0B131E !important;\n      font-weight: 800;\n      text-transform: uppercase;\n      font-size: 13px;\n      letter-spacing: 1px;\n      padding: 12px 26px;\n      border-radius: 6px;\n      text-decoration: none;\n      margin: 10px 0;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"wrapper\">\n    <div class=\"container\">\n      <div class=\"header\">\n        <h1 class=\"brand\">GEAR<span>UP</span> ESPORTS</h1>\n        <div class=\"badge\">ACCOUNT REGISTERED</div>\n      </div>\n      <div class=\"body\">\n        \n    <h2 style=\"color:#FFFFFF;margin-top:0;font-size:20px;font-weight:800;text-transform:uppercase;\">\n      Welcome to the Arena, Sahithi!\n    </h2>\n    <p style=\"font-size:14px;line-height:1.6;color:#CBD5E1;\">\n      Your GearUp player account has been created successfully. You are now equipped to participate in verified BGMI and Free Fire MAX competitive tournaments, track real-time match stats, and win real prize pools.\n    </p>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#5BD19B;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Profile Summary\n      </div>\n      <table class=\"grid-table\">\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Username:</td>\n          <td class=\"val\">Sahithi</td>\n        </tr>\n        <tr>\n          <td class=\"label\">In-Game Name:</td>\n          <td class=\"val-highlight\">Sahithi</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Registered Email:</td>\n          <td class=\"val\">sahithinidasanametla762@gmail.com</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Account Role:</td>\n          <td class=\"val\">PLAYER</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"notice-box\">\n      <strong>🚀 QUICK START GUIDE:</strong>\n      <ol style=\"margin:8px 0 0 18px;padding:0;\">\n        <li>Browse active tournaments on the homepage.</li>\n        <li>Register your squad with your in-game UID and mobile number.</li>\n        <li>Receive your match confirmation email and real-time room credentials prior to match time!</li>\n      </ol>\n    </div>\n\n    <div style=\"text-align:center;margin-top:24px;\">\n      <a href=\"http://localhost:5173\" class=\"btn\" target=\"_blank\">Start Competing</a>\n    </div>\n  \n      </div>\n      <div class=\"footer\">\n        <p style=\"margin:0 0 6px 0;\">This is an automated confirmation sent by <strong>GearUp Esports Platform</strong>.</p>\n        <p style=\"margin:0;\">Need assistance? Reach out to support at <a href=\"mailto:support@gearup.gg\" style=\"color:#5BD19B;text-decoration:none;\">support@gearup.gg</a></p>\n      </div>\n    </div>\n  </div>\n</body>\n</html>"
+    },
+    {
+      "id": "email-1789206456720-6lif3x",
+      "type": "TOURNAMENT_REGISTRATION",
+      "recipient": "srisaisaketh999@gmail.com",
+      "subject": "🎮 Registration Confirmed: BGMI SUNDAY CLASH SERIES 4 | GearUp Esports",
+      "tournament_id": "t-1",
+      "tournament_title": "BGMI SUNDAY CLASH SERIES 4",
+      "player_ign": "SakethMVP",
+      "timestamp": "2026-09-12T09:47:36.720Z",
+      "preview_url": "https://ethereal.email/message/aqUfs3S9RyYbkYcFaqUfuGBC2ZnvdlysAAAAATbe5LiORI7P-p4mMyMIhxs",
+      "message_id": "<74267dc2-2462-7141-6693-28c0d95af66f@gearup.gg>",
+      "status": "SENT",
+      "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>🎮 Registration Confirmed: BGMI SUNDAY CLASH SERIES 4 | GearUp Esports</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-color: #080D14;\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n      color: #E2E8F0;\n    }\n    .wrapper {\n      width: 100%;\n      background-color: #080D14;\n      padding: 30px 10px;\n      box-sizing: border-box;\n    }\n    .container {\n      max-width: 600px;\n      margin: 0 auto;\n      background-color: #0F1A28;\n      border: 1px solid #1F324B;\n      border-radius: 12px;\n      overflow: hidden;\n      box-shadow: 0 10px 25px rgba(0,0,0,0.5);\n    }\n    .header {\n      background: linear-gradient(135deg, #111C2B 0%, #0F253E 100%);\n      padding: 24px;\n      text-align: center;\n      border-bottom: 2px solid #5BD19B;\n    }\n    .brand {\n      font-size: 24px;\n      font-weight: 900;\n      letter-spacing: 2px;\n      text-transform: uppercase;\n      color: #FFFFFF;\n      margin: 0;\n    }\n    .brand span {\n      color: #5BD19B;\n    }\n    .badge {\n      display: inline-block;\n      margin-top: 10px;\n      padding: 5px 14px;\n      font-size: 11px;\n      font-weight: 800;\n      text-transform: uppercase;\n      letter-spacing: 1.5px;\n      background-color: rgba(91, 209, 155, 0.15);\n      border: 1px solid #5BD19B;\n      color: #5BD19B;\n      border-radius: 20px;\n    }\n    .body {\n      padding: 28px 24px;\n    }\n    .info-card {\n      background-color: #0B131E;\n      border: 1px solid #1F324B;\n      border-radius: 8px;\n      padding: 18px;\n      margin: 18px 0;\n    }\n    .grid-table {\n      width: 100%;\n      border-collapse: collapse;\n    }\n    .grid-table td {\n      padding: 8px 6px;\n      font-size: 13px;\n      vertical-align: top;\n    }\n    .label {\n      color: #94A3B8;\n      font-weight: 600;\n      text-transform: uppercase;\n      font-size: 11px;\n      letter-spacing: 0.5px;\n    }\n    .val {\n      color: #FFFFFF;\n      font-weight: 700;\n    }\n    .val-highlight {\n      color: #5BD19B;\n      font-weight: 800;\n    }\n    .notice-box {\n      background-color: rgba(56, 189, 248, 0.08);\n      border-left: 4px solid #38BDF8;\n      padding: 14px 16px;\n      border-radius: 4px;\n      margin: 20px 0;\n      font-size: 13px;\n      line-height: 1.5;\n      color: #BAE6FD;\n    }\n    .footer {\n      background-color: #0B131E;\n      padding: 20px;\n      text-align: center;\n      border-top: 1px solid #1F324B;\n      font-size: 12px;\n      color: #64748B;\n    }\n    .btn {\n      display: inline-block;\n      background-color: #5BD19B;\n      color: #0B131E !important;\n      font-weight: 800;\n      text-transform: uppercase;\n      font-size: 13px;\n      letter-spacing: 1px;\n      padding: 12px 26px;\n      border-radius: 6px;\n      text-decoration: none;\n      margin: 10px 0;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"wrapper\">\n    <div class=\"container\">\n      <div class=\"header\">\n        <h1 class=\"brand\">GEAR<span>UP</span> ESPORTS</h1>\n        <div class=\"badge\">REGISTRATION CONFIRMED</div>\n      </div>\n      <div class=\"body\">\n        \n    <h2 style=\"color:#FFFFFF;margin-top:0;font-size:20px;font-weight:800;text-transform:uppercase;\">\n      Match Slot Reserved!\n    </h2>\n    <p style=\"font-size:14px;line-height:1.6;color:#CBD5E1;\">\n      Hey <strong>SakethMVP</strong>, your registration for <strong>BGMI SUNDAY CLASH SERIES 4</strong> has been successfully confirmed. Get ready for battle!\n    </p>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#5BD19B;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Tournament Specifications\n      </div>\n      <table class=\"grid-table\">\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Tournament:</td>\n          <td class=\"val\">BGMI SUNDAY CLASH SERIES 4</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Game & Format:</td>\n          <td class=\"val\"><span class=\"val-highlight\">BGMI</span> • Squad</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Match Date:</td>\n          <td class=\"val\">2026-09-13</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Kickoff Time:</td>\n          <td class=\"val\">20:00 IST</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Map:</td>\n          <td class=\"val\">Erangel</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Prize Pool:</td>\n          <td class=\"val-highlight\">₹10,000</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Organiser:</td>\n          <td class=\"val\">GearUp Official</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#38BDF8;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Your Player Details\n      </div>\n      <table class=\"grid-table\">\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">In-Game Name (IGN):</td>\n          <td class=\"val\">SakethMVP</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Game UID:</td>\n          <td class=\"val\">98889</td>\n        </tr>\n        <tr><td class=\"label\">Team / Squad:</td><td class=\"val\">test</td></tr>\n        <tr><td class=\"label\">Contact Phone:</td><td class=\"val\">6303134462</td></tr>\n        <tr>\n          <td class=\"label\">Confirmation Status:</td>\n          <td class=\"val\" style=\"color:#5BD19B;\">CONFIRMED (Slot Booked)</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"notice-box\">\n      <strong>⚠️ HOW TO ACCESS ROOM ID & PASSWORD:</strong><br>\n      The custom match credentials (Room ID and Password) will unlock <strong>15 minutes prior to match start (20:00)</strong>.\n      You can access the credentials directly via:\n      <ul style=\"margin:8px 0 0 18px;padding:0;\">\n        <li>Your GearUp Dashboard & Notification Center bell</li>\n        <li>The Tournament Details page under the \"Room ID & Pass\" tab</li>\n        <li>Match lobby live announcements</li>\n      </ul>\n    </div>\n\n    <div style=\"text-align:center;margin-top:24px;\">\n      <a href=\"http://localhost:5173\" class=\"btn\" target=\"_blank\">Open GearUp Portal</a>\n    </div>\n  \n      </div>\n      <div class=\"footer\">\n        <p style=\"margin:0 0 6px 0;\">This is an automated confirmation sent by <strong>GearUp Esports Platform</strong>.</p>\n        <p style=\"margin:0;\">Need assistance? Reach out to support at <a href=\"mailto:support@gearup.gg\" style=\"color:#5BD19B;text-decoration:none;\">support@gearup.gg</a></p>\n      </div>\n    </div>\n  </div>\n</body>\n</html>"
+    },
+    {
+      "id": "email-1789204050874-hbmusx",
+      "type": "TOURNAMENT_REGISTRATION",
+      "recipient": "srisaisaketh999@gmail.com",
+      "subject": "🎮 Registration Confirmed: test 2 | GearUp Esports",
+      "tournament_id": "t-1789201607992",
+      "tournament_title": "test 2",
+      "player_ign": "SakethMVP",
+      "timestamp": "2026-09-12T09:07:30.874Z",
+      "preview_url": "https://ethereal.email/message/aqUUSnS9RyYbkAovaqUWUmBC2ZnvdlswAAAAAvbgbccJinV0GppV6y0.8Kg",
+      "message_id": "<9f69cc3b-fdfa-fe81-195a-519b1b7157bf@gearup.gg>",
+      "status": "SENT",
+      "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>🎮 Registration Confirmed: test 2 | GearUp Esports</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-color: #080D14;\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n      color: #E2E8F0;\n    }\n    .wrapper {\n      width: 100%;\n      background-color: #080D14;\n      padding: 30px 10px;\n      box-sizing: border-box;\n    }\n    .container {\n      max-width: 600px;\n      margin: 0 auto;\n      background-color: #0F1A28;\n      border: 1px solid #1F324B;\n      border-radius: 12px;\n      overflow: hidden;\n      box-shadow: 0 10px 25px rgba(0,0,0,0.5);\n    }\n    .header {\n      background: linear-gradient(135deg, #111C2B 0%, #0F253E 100%);\n      padding: 24px;\n      text-align: center;\n      border-bottom: 2px solid #5BD19B;\n    }\n    .brand {\n      font-size: 24px;\n      font-weight: 900;\n      letter-spacing: 2px;\n      text-transform: uppercase;\n      color: #FFFFFF;\n      margin: 0;\n    }\n    .brand span {\n      color: #5BD19B;\n    }\n    .badge {\n      display: inline-block;\n      margin-top: 10px;\n      padding: 5px 14px;\n      font-size: 11px;\n      font-weight: 800;\n      text-transform: uppercase;\n      letter-spacing: 1.5px;\n      background-color: rgba(91, 209, 155, 0.15);\n      border: 1px solid #5BD19B;\n      color: #5BD19B;\n      border-radius: 20px;\n    }\n    .body {\n      padding: 28px 24px;\n    }\n    .info-card {\n      background-color: #0B131E;\n      border: 1px solid #1F324B;\n      border-radius: 8px;\n      padding: 18px;\n      margin: 18px 0;\n    }\n    .grid-table {\n      width: 100%;\n      border-collapse: collapse;\n    }\n    .grid-table td {\n      padding: 8px 6px;\n      font-size: 13px;\n      vertical-align: top;\n    }\n    .label {\n      color: #94A3B8;\n      font-weight: 600;\n      text-transform: uppercase;\n      font-size: 11px;\n      letter-spacing: 0.5px;\n    }\n    .val {\n      color: #FFFFFF;\n      font-weight: 700;\n    }\n    .val-highlight {\n      color: #5BD19B;\n      font-weight: 800;\n    }\n    .notice-box {\n      background-color: rgba(56, 189, 248, 0.08);\n      border-left: 4px solid #38BDF8;\n      padding: 14px 16px;\n      border-radius: 4px;\n      margin: 20px 0;\n      font-size: 13px;\n      line-height: 1.5;\n      color: #BAE6FD;\n    }\n    .footer {\n      background-color: #0B131E;\n      padding: 20px;\n      text-align: center;\n      border-top: 1px solid #1F324B;\n      font-size: 12px;\n      color: #64748B;\n    }\n    .btn {\n      display: inline-block;\n      background-color: #5BD19B;\n      color: #0B131E !important;\n      font-weight: 800;\n      text-transform: uppercase;\n      font-size: 13px;\n      letter-spacing: 1px;\n      padding: 12px 26px;\n      border-radius: 6px;\n      text-decoration: none;\n      margin: 10px 0;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"wrapper\">\n    <div class=\"container\">\n      <div class=\"header\">\n        <h1 class=\"brand\">GEAR<span>UP</span> ESPORTS</h1>\n        <div class=\"badge\">REGISTRATION CONFIRMED</div>\n      </div>\n      <div class=\"body\">\n        \n    <h2 style=\"color:#FFFFFF;margin-top:0;font-size:20px;font-weight:800;text-transform:uppercase;\">\n      Match Slot Reserved!\n    </h2>\n    <p style=\"font-size:14px;line-height:1.6;color:#CBD5E1;\">\n      Hey <strong>SakethMVP</strong>, your registration for <strong>test 2</strong> has been successfully confirmed. Get ready for battle!\n    </p>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#5BD19B;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Tournament Specifications\n      </div>\n      <table class=\"grid-table\">\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Tournament:</td>\n          <td class=\"val\">test 2</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Game & Format:</td>\n          <td class=\"val\"><span class=\"val-highlight\">BGMI</span> • Solo</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Match Date:</td>\n          <td class=\"val\">2026-09-18</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Kickoff Time:</td>\n          <td class=\"val\">15:30 IST</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Map:</td>\n          <td class=\"val\">Erangel</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Prize Pool:</td>\n          <td class=\"val-highlight\">₹5,000</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Organiser:</td>\n          <td class=\"val\">GearUp Official</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#38BDF8;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Your Player Details\n      </div>\n      <table class=\"grid-table\">\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">In-Game Name (IGN):</td>\n          <td class=\"val\">SakethMVP</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Game UID:</td>\n          <td class=\"val\">540640108</td>\n        </tr>\n        \n        <tr><td class=\"label\">Contact Phone:</td><td class=\"val\">6303134462</td></tr>\n        <tr>\n          <td class=\"label\">Confirmation Status:</td>\n          <td class=\"val\" style=\"color:#5BD19B;\">CONFIRMED (Slot Booked)</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"notice-box\">\n      <strong>⚠️ HOW TO ACCESS ROOM ID & PASSWORD:</strong><br>\n      The custom match credentials (Room ID and Password) will unlock <strong>15 minutes prior to match start (15:30)</strong>.\n      You can access the credentials directly via:\n      <ul style=\"margin:8px 0 0 18px;padding:0;\">\n        <li>Your GearUp Dashboard & Notification Center bell</li>\n        <li>The Tournament Details page under the \"Room ID & Pass\" tab</li>\n        <li>Match lobby live announcements</li>\n      </ul>\n    </div>\n\n    <div style=\"text-align:center;margin-top:24px;\">\n      <a href=\"http://localhost:5173\" class=\"btn\" target=\"_blank\">Open GearUp Portal</a>\n    </div>\n  \n      </div>\n      <div class=\"footer\">\n        <p style=\"margin:0 0 6px 0;\">This is an automated confirmation sent by <strong>GearUp Esports Platform</strong>.</p>\n        <p style=\"margin:0;\">Need assistance? Reach out to support at <a href=\"mailto:support@gearup.gg\" style=\"color:#5BD19B;text-decoration:none;\">support@gearup.gg</a></p>\n      </div>\n    </div>\n  </div>\n</body>\n</html>"
+    },
+    {
+      "id": "email-1789203535362-pm89s2",
+      "type": "ACCOUNT_REGISTRATION",
+      "recipient": "srisaisaketh999@gmail.com",
+      "subject": "🔥 Welcome to GearUp Esports - Account Successfully Registered!",
+      "username": "Sri Sai Saketh",
+      "timestamp": "2026-09-12T08:58:55.362Z",
+      "preview_url": "https://ethereal.email/message/aqUUSnS9RyYbkAovaqUUT2BC2ZnvdlqtAAAAATJk556s5MmnoLnVfvJA5pA",
+      "message_id": "<30168872-70e1-2e4c-1016-69542f9afe41@gearup.gg>",
+      "status": "SENT",
+      "html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>🔥 Welcome to GearUp Esports - Account Successfully Registered!</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-color: #080D14;\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n      color: #E2E8F0;\n    }\n    .wrapper {\n      width: 100%;\n      background-color: #080D14;\n      padding: 30px 10px;\n      box-sizing: border-box;\n    }\n    .container {\n      max-width: 600px;\n      margin: 0 auto;\n      background-color: #0F1A28;\n      border: 1px solid #1F324B;\n      border-radius: 12px;\n      overflow: hidden;\n      box-shadow: 0 10px 25px rgba(0,0,0,0.5);\n    }\n    .header {\n      background: linear-gradient(135deg, #111C2B 0%, #0F253E 100%);\n      padding: 24px;\n      text-align: center;\n      border-bottom: 2px solid #5BD19B;\n    }\n    .brand {\n      font-size: 24px;\n      font-weight: 900;\n      letter-spacing: 2px;\n      text-transform: uppercase;\n      color: #FFFFFF;\n      margin: 0;\n    }\n    .brand span {\n      color: #5BD19B;\n    }\n    .badge {\n      display: inline-block;\n      margin-top: 10px;\n      padding: 5px 14px;\n      font-size: 11px;\n      font-weight: 800;\n      text-transform: uppercase;\n      letter-spacing: 1.5px;\n      background-color: rgba(91, 209, 155, 0.15);\n      border: 1px solid #5BD19B;\n      color: #5BD19B;\n      border-radius: 20px;\n    }\n    .body {\n      padding: 28px 24px;\n    }\n    .info-card {\n      background-color: #0B131E;\n      border: 1px solid #1F324B;\n      border-radius: 8px;\n      padding: 18px;\n      margin: 18px 0;\n    }\n    .grid-table {\n      width: 100%;\n      border-collapse: collapse;\n    }\n    .grid-table td {\n      padding: 8px 6px;\n      font-size: 13px;\n      vertical-align: top;\n    }\n    .label {\n      color: #94A3B8;\n      font-weight: 600;\n      text-transform: uppercase;\n      font-size: 11px;\n      letter-spacing: 0.5px;\n    }\n    .val {\n      color: #FFFFFF;\n      font-weight: 700;\n    }\n    .val-highlight {\n      color: #5BD19B;\n      font-weight: 800;\n    }\n    .notice-box {\n      background-color: rgba(56, 189, 248, 0.08);\n      border-left: 4px solid #38BDF8;\n      padding: 14px 16px;\n      border-radius: 4px;\n      margin: 20px 0;\n      font-size: 13px;\n      line-height: 1.5;\n      color: #BAE6FD;\n    }\n    .footer {\n      background-color: #0B131E;\n      padding: 20px;\n      text-align: center;\n      border-top: 1px solid #1F324B;\n      font-size: 12px;\n      color: #64748B;\n    }\n    .btn {\n      display: inline-block;\n      background-color: #5BD19B;\n      color: #0B131E !important;\n      font-weight: 800;\n      text-transform: uppercase;\n      font-size: 13px;\n      letter-spacing: 1px;\n      padding: 12px 26px;\n      border-radius: 6px;\n      text-decoration: none;\n      margin: 10px 0;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"wrapper\">\n    <div class=\"container\">\n      <div class=\"header\">\n        <h1 class=\"brand\">GEAR<span>UP</span> ESPORTS</h1>\n        <div class=\"badge\">ACCOUNT REGISTERED</div>\n      </div>\n      <div class=\"body\">\n        \n    <h2 style=\"color:#FFFFFF;margin-top:0;font-size:20px;font-weight:800;text-transform:uppercase;\">\n      Welcome to the Arena, Sri Sai Saketh!\n    </h2>\n    <p style=\"font-size:14px;line-height:1.6;color:#CBD5E1;\">\n      Your GearUp player account has been created successfully. You are now equipped to participate in verified BGMI and Free Fire MAX competitive tournaments, track real-time match stats, and win real prize pools.\n    </p>\n\n    <div class=\"info-card\">\n      <div style=\"font-size:12px;font-weight:800;color:#5BD19B;text-transform:uppercase;margin-bottom:12px;letter-spacing:1px;\">\n        Profile Summary\n      </div>\n      <table class=\"grid-table\">\n        <tr>\n          <td class=\"label\" style=\"width:35%;\">Username:</td>\n          <td class=\"val\">Sri Sai Saketh</td>\n        </tr>\n        <tr>\n          <td class=\"label\">In-Game Name:</td>\n          <td class=\"val-highlight\">SakethMVP</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Registered Email:</td>\n          <td class=\"val\">srisaisaketh999@gmail.com</td>\n        </tr>\n        <tr>\n          <td class=\"label\">Account Role:</td>\n          <td class=\"val\">PLAYER</td>\n        </tr>\n      </table>\n    </div>\n\n    <div class=\"notice-box\">\n      <strong>🚀 QUICK START GUIDE:</strong>\n      <ol style=\"margin:8px 0 0 18px;padding:0;\">\n        <li>Browse active tournaments on the homepage.</li>\n        <li>Register your squad with your in-game UID and mobile number.</li>\n        <li>Receive your match confirmation email and real-time room credentials prior to match time!</li>\n      </ol>\n    </div>\n\n    <div style=\"text-align:center;margin-top:24px;\">\n      <a href=\"http://localhost:5173\" class=\"btn\" target=\"_blank\">Start Competing</a>\n    </div>\n  \n      </div>\n      <div class=\"footer\">\n        <p style=\"margin:0 0 6px 0;\">This is an automated confirmation sent by <strong>GearUp Esports Platform</strong>.</p>\n        <p style=\"margin:0;\">Need assistance? Reach out to support at <a href=\"mailto:support@gearup.gg\" style=\"color:#5BD19B;text-decoration:none;\">support@gearup.gg</a></p>\n      </div>\n    </div>\n  </div>\n</body>\n</html>"
+    }
+  ],
+  "settings": {
+    "hide_completed": true
+  },
+  "payment_config": {
+    "upi_id": "6303134462@axl",
+    "payee_name": "GearUp Esports"
+  },
+  "payment_requests": [
+    {
+      "id": "pay-1789305879866-clkb",
+      "user_id": "u-1789203528850-cy93",
+      "username": "Sri Sai Saketh",
+      "player_ign": "SakethMVP",
+      "phone": "6303134462",
+      "amount": 10,
+      "utr_number": "352279596145",
+      "payment_method": "UPI QR",
+      "status": "APPROVED",
+      "submitted_at": "2026-09-13T13:24:39.866Z",
+      "approved_at": "2026-09-13T13:25:35.355Z"
+    },
+    {
+      "id": "pay-1789217374940-y6lw",
+      "user_id": "u2",
+      "username": "Player",
+      "player_ign": "Player",
+      "phone": "",
+      "amount": 100,
+      "utr_number": "123456789013",
+      "payment_method": "UPI QR",
+      "status": "REJECTED",
+      "submitted_at": "2026-09-12T12:49:34.940Z",
+      "rejection_reason": "Invalid or forged UTR receipt"
+    },
+    {
+      "id": "pay-1789217322891-nozp",
+      "user_id": "u1",
+      "username": "Player",
+      "player_ign": "Player",
+      "phone": "",
+      "amount": 250,
+      "utr_number": "123456789012",
+      "payment_method": "UPI QR",
+      "status": "APPROVED",
+      "submitted_at": "2026-09-12T12:48:42.891Z",
+      "approved_at": "2026-09-12T12:48:42.907Z"
+    }
+  ]
+}
