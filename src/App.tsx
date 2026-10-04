@@ -481,6 +481,15 @@ export default function App() {
           setIsLoginModalOpen(false);
           navigate('/register');
         }}
+        onResetSuccess={(updatedUser) => {
+          setUser(updatedUser);
+          soundFx.playSuccess();
+          if (updatedUser.role === 'ADMIN' || updatedUser.role === 'ORGANISER') {
+            navigate('/dashboard/organiser');
+          } else {
+            navigate('/dashboard/player');
+          }
+        }}
       />
     </div>
   );

@@ -39,8 +39,51 @@ import {
   XCircle,
   Clock,
   QrCode,
-  AlertTriangle
+  AlertTriangle,
+  Image as ImageIcon,
+  Upload,
+  Link2,
+  Sparkles
 } from 'lucide-react';
+
+export const GAME_BANNER_PRESETS: Record<TournamentGame, { label: string; url: string }[]> = {
+  'BGMI': [
+    {
+      label: 'Erangel Airdrop',
+      url: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200'
+    },
+    {
+      label: 'Esports Championship Arena',
+      url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=1200'
+    },
+    {
+      label: 'Tactical Battleground',
+      url: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=1200'
+    },
+    {
+      label: 'Military Drop Zone',
+      url: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?auto=format&fit=crop&q=80&w=1200'
+    }
+  ],
+  'Free Fire MAX': [
+    {
+      label: 'Bermuda Sunset Clash',
+      url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200'
+    },
+    {
+      label: 'Neon Battleground Rush',
+      url: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&q=80&w=1200'
+    },
+    {
+      label: 'Futuristic Cyber Arena',
+      url: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=1200'
+    },
+    {
+      label: 'Grand Finals Stage',
+      url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=1200'
+    }
+  ]
+};
 
 interface OrganiserPortalProps {
   tournaments: Tournament[];
@@ -449,6 +492,108 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
   ]);
   const [standingsSuccess, setStandingsSuccess] = useState(false);
 
+  // Tournament Banner States
+  const [newBannerUrl, setNewBannerUrl] = useState(GAME_BANNER_PRESETS['BGMI'][0].url);
+  const [bannerInputMode, setBannerInputMode] = useState<'preset' | 'upload' | 'url'>('preset');
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+  const [bannerUploadError, setBannerUploadError] = useState<string | null>(null);
+
+  // Edit tournament banner modal state
+  const [selectedTournamentForBanner, setSelectedTournamentForBanner] = useState<Tournament | null>(null);
+  const [editBannerUrl, setEditBannerUrl] = useState('');
+  const [editBannerMode, setEditBannerMode] = useState<'preset' | 'upload' | 'url'>('preset');
+  const [isUploadingEditBanner, setIsUploadingEditBanner] = useState(false);
+  const [isSavingBanner, setIsSavingBanner] = useState(false);
+  const [editBannerSuccess, setEditBannerSuccess] = useState(false);
+  const [editBannerError, setEditBannerError] = useState<string | null>(null);
+
+  const handleGameChange = (game: TournamentGame) => {
+    setNewGame(game);
+    const presets = GAME_BANNER_PRESETS[game];
+    if (presets && presets.length > 0) {
+      const currentIsPreset = Object.values(GAME_BANNER_PRESETS).flat().some(p => p.url === newBannerUrl);
+      if (currentIsPreset || !newBannerUrl) {
+        setNewBannerUrl(presets[0].url);
+      }
+    }
+  };
+
+  const handleBannerFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isEditing = false) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      const err = 'Please select a valid image file (PNG, JPG, WEBP)';
+      if (isEditing) setEditBannerError(err);
+      else setBannerUploadError(err);
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      const err = 'Image file size must be under 10MB';
+      if (isEditing) setEditBannerError(err);
+      else setBannerUploadError(err);
+      return;
+    }
+
+    if (isEditing) {
+      setIsUploadingEditBanner(true);
+      setEditBannerError(null);
+    } else {
+      setIsUploadingBanner(true);
+      setBannerUploadError(null);
+    }
+
+    try {
+      const uploadedUrl = await tournamentService.uploadTournamentBanner(file);
+      if (isEditing) {
+        setEditBannerUrl(uploadedUrl);
+      } else {
+        setNewBannerUrl(uploadedUrl);
+      }
+    } catch {
+      const err = 'Failed to process image file. Please try another image.';
+      if (isEditing) setEditBannerError(err);
+      else setBannerUploadError(err);
+    } finally {
+      if (isEditing) setIsUploadingEditBanner(false);
+      else setIsUploadingBanner(false);
+    }
+  };
+
+  const openEditBannerModal = (tournament: Tournament) => {
+    setSelectedTournamentForBanner(tournament);
+    setEditBannerUrl(tournament.banner_url || GAME_BANNER_PRESETS[tournament.game]?.[0]?.url || '');
+    setEditBannerMode('preset');
+    setEditBannerError(null);
+    setEditBannerSuccess(false);
+  };
+
+  const handleSaveEditBanner = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTournamentForBanner) return;
+    if (!editBannerUrl.trim()) {
+      setEditBannerError('Please choose or enter a banner image URL');
+      return;
+    }
+
+    setIsSavingBanner(true);
+    setEditBannerError(null);
+    try {
+      await tournamentService.updateTournamentBanner(selectedTournamentForBanner.id, editBannerUrl.trim());
+      soundFx.playSuccess();
+      setEditBannerSuccess(true);
+      setTimeout(() => {
+        setEditBannerSuccess(false);
+        setSelectedTournamentForBanner(null);
+      }, 1200);
+    } catch {
+      setEditBannerError('Failed to update tournament banner image');
+    } finally {
+      setIsSavingBanner(false);
+    }
+  };
+
   const openRoomBroadcastModal = (tournament: Tournament) => {
     setSelectedTournamentForRoom(tournament);
     setRoomId(tournament.room_credential?.roomId || '');
@@ -555,13 +700,12 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const bannerUrl =
+    const fallbackBanner =
       newGame === 'BGMI'
         ? 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200'
-        : newGame === 'Free Fire MAX'
-        ? 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=1200'
-        : 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=1200';
+        : 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=1200';
 
+    const chosenBanner = newBannerUrl?.trim() || fallbackBanner;
     const totalPrize = Number(firstPrize) + Number(secondPrize) + Number(thirdPrize);
 
     onCreateTournament({
@@ -575,7 +719,7 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
       prize_pool: totalPrize,
       slots_total: Number(newSlotsTotal),
       status: 'REGISTRATION_OPEN',
-      banner_url: bannerUrl,
+      banner_url: chosenBanner,
       map: newMap,
       rules: newRules,
       room_credential: {
@@ -593,6 +737,8 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
     setCreateSuccess(true);
     setTimeout(() => {
       setCreateSuccess(false);
+      setNewTitle('');
+      setNewBannerUrl(GAME_BANNER_PRESETS['BGMI'][0].url);
       setActiveTab('manage');
     }, 1500);
   };
@@ -836,6 +982,31 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                       </div>
                     </div>
 
+                    {/* Tournament Banner Thumbnail with Quick Edit Overlay */}
+                    <div className="relative w-full h-28 sm:h-32 rounded-xl overflow-hidden mb-3 border border-[#1F324B] group bg-black/40">
+                      <img
+                        src={tournament.banner_url || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200'}
+                        alt={tournament.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0E1724]/90 via-transparent to-black/30 pointer-events-none" />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditBannerModal(tournament);
+                        }}
+                        className="absolute top-2 right-2 bg-[#0B131E]/85 hover:bg-[#152234] text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg backdrop-blur-md border border-[#1F324B] flex items-center gap-1.5 shadow transition-all hover:border-[#4D8EF7]/60"
+                        title="Change tournament banner image"
+                      >
+                        <ImageIcon size={12} className="text-[#4D8EF7]" />
+                        <span>Edit Image</span>
+                      </button>
+                    </div>
+
                     <h3
                       onClick={() => navigate(`/tournament/${tournament.id}`)}
                       className="text-base font-bold font-display uppercase text-white hover:text-[#5BD19B] cursor-pointer"
@@ -897,7 +1068,7 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                       <Button
                         variant="outline"
                         size="sm"
@@ -932,6 +1103,17 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                       >
                         <Trophy size={13} />
                         <span>Edit Prizes</span>
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        fullWidth
+                        onClick={() => openEditBannerModal(tournament)}
+                        className="text-xs py-2 text-[#4D8EF7] hover:text-[#4D8EF7] border-[#1F324B] hover:border-[#4D8EF7]/40"
+                      >
+                        <ImageIcon size={13} />
+                        <span>Edit Image</span>
                       </Button>
 
                       <Button
@@ -2151,7 +2333,7 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                   <label className="block text-xs font-bold uppercase text-zinc-300 mb-1">Game</label>
                   <select
                     value={newGame}
-                    onChange={(e) => setNewGame(e.target.value as TournamentGame)}
+                    onChange={(e) => handleGameChange(e.target.value as TournamentGame)}
                     className="w-full bg-[#0B131E] border border-[#1F324B] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#5BD19B]"
                   >
                     <option value="BGMI">BGMI</option>
@@ -2287,6 +2469,185 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                   placeholder="e.g. Erangel, Bermuda, Ascent"
                   className="w-full bg-[#0B131E] border border-[#1F324B] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#5BD19B]"
                 />
+              </div>
+
+              {/* Tournament Banner Image Selector */}
+              <div className="bg-[#0B131E] border border-[#1F324B] rounded-xl p-4 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-white flex items-center gap-1.5 font-display">
+                      <ImageIcon size={14} className="text-[#4D8EF7]" /> Tournament Banner Image
+                    </label>
+                    <p className="text-[11px] text-zinc-400">
+                      Customize a separate image for this tournament. Choose an Esports Preset, Upload an Image file, or paste a Direct URL.
+                    </p>
+                  </div>
+
+                  {/* Mode switch pills */}
+                  <div className="flex items-center gap-1 bg-[#152234] p-1 rounded-xl border border-[#1F324B] self-start sm:self-auto">
+                    <button
+                      type="button"
+                      onClick={() => setBannerInputMode('preset')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all flex items-center gap-1 ${
+                        bannerInputMode === 'preset'
+                          ? 'bg-[#4D8EF7] text-white shadow-sm'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      <Sparkles size={11} /> Presets
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBannerInputMode('upload')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all flex items-center gap-1 ${
+                        bannerInputMode === 'upload'
+                          ? 'bg-[#4D8EF7] text-white shadow-sm'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      <Upload size={11} /> Upload
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBannerInputMode('url')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all flex items-center gap-1 ${
+                        bannerInputMode === 'url'
+                          ? 'bg-[#4D8EF7] text-white shadow-sm'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      <Link2 size={11} /> URL
+                    </button>
+                  </div>
+                </div>
+
+                {/* Live Banner Preview */}
+                <div className="relative w-full h-36 sm:h-44 rounded-xl overflow-hidden border border-[#1F324B] bg-[#0E1724]">
+                  <img
+                    src={newBannerUrl || GAME_BANNER_PRESETS[newGame]?.[0]?.url}
+                    alt="Banner Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+                  <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-bold text-white uppercase tracking-wider">
+                    <span className="w-2 h-2 rounded-full bg-[#5BD19B] animate-pulse" /> Live Preview
+                  </div>
+                  <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-xs text-white drop-shadow">
+                    <span className="font-display font-black uppercase truncate">{newTitle || 'Tournament Title'}</span>
+                    <span className="font-mono text-[11px] text-zinc-300">{newGame}</span>
+                  </div>
+                </div>
+
+                {/* Mode 1: Curated Esports Presets */}
+                {bannerInputMode === 'preset' && (
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-bold uppercase text-zinc-400">
+                      Choose {newGame} Curated Esport Theme:
+                    </span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {(GAME_BANNER_PRESETS[newGame] || []).map((preset) => {
+                        const isSelected = newBannerUrl === preset.url;
+                        return (
+                          <button
+                            key={preset.url}
+                            type="button"
+                            onClick={() => setNewBannerUrl(preset.url)}
+                            className={`group relative h-20 rounded-xl overflow-hidden border transition-all text-left ${
+                              isSelected
+                                ? 'border-[#5BD19B] ring-2 ring-[#5BD19B]/30 shadow-[0_0_12px_rgba(91,209,155,0.3)]'
+                                : 'border-[#1F324B] hover:border-zinc-400 opacity-70 hover:opacity-100'
+                            }`}
+                          >
+                            <img
+                              src={preset.url}
+                              alt={preset.label}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                            <div className="absolute bottom-1 left-1.5 right-1.5 text-[10px] font-bold text-white leading-tight truncate">
+                              {preset.label}
+                            </div>
+                            {isSelected && (
+                              <div className="absolute top-1 right-1 bg-[#5BD19B] text-[#0B131E] rounded-full p-0.5">
+                                <Check size={10} strokeWidth={3} />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Mode 2: Direct File Upload */}
+                {bannerInputMode === 'upload' && (
+                  <div className="space-y-2">
+                    <label className="block w-full border-2 border-dashed border-[#1F324B] hover:border-[#4D8EF7] rounded-xl p-4 text-center cursor-pointer transition-colors bg-[#111C2B]/50 hover:bg-[#111C2B]">
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/jpg"
+                        className="hidden"
+                        onChange={(e) => handleBannerFileUpload(e, false)}
+                        disabled={isUploadingBanner}
+                      />
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <div className="w-10 h-10 rounded-full bg-[#4D8EF7]/10 text-[#4D8EF7] flex items-center justify-center">
+                          {isUploadingBanner ? (
+                            <RefreshCw size={18} className="animate-spin" />
+                          ) : (
+                            <Upload size={18} />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white">
+                            {isUploadingBanner ? 'Uploading and optimizing image...' : 'Click to select custom image from device'}
+                          </p>
+                          <p className="text-[10px] text-zinc-400 mt-0.5">
+                            Supports PNG, JPG, or WEBP (Max 10MB)
+                          </p>
+                        </div>
+                      </div>
+                    </label>
+                    {bannerUploadError && (
+                      <p className="text-xs text-red-400 flex items-center gap-1">
+                        <AlertTriangle size={12} /> {bannerUploadError}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Mode 3: Direct URL */}
+                {bannerInputMode === 'url' && (
+                  <div className="space-y-1">
+                    <label className="block text-[11px] font-bold uppercase text-zinc-400">
+                      Image Web Address (URL)
+                    </label>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <Link2 size={14} className="absolute left-3.5 top-3 text-zinc-500" />
+                        <input
+                          type="url"
+                          value={newBannerUrl}
+                          onChange={(e) => setNewBannerUrl(e.target.value)}
+                          placeholder="https://example.com/banner.jpg"
+                          className="w-full bg-[#111C2B] border border-[#1F324B] rounded-xl pl-9 pr-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#4D8EF7]"
+                        />
+                      </div>
+                      {newBannerUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setNewBannerUrl(GAME_BANNER_PRESETS[newGame]?.[0]?.url || '')}
+                          className="px-3 py-2 bg-[#152234] hover:bg-[#1F324B] text-zinc-300 text-xs rounded-xl border border-[#1F324B] transition-colors"
+                        >
+                          Reset
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -2865,6 +3226,223 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Tournament Banner Modal */}
+      {selectedTournamentForBanner && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[#0F1A28] border border-[#1F324B] rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 relative overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-[#1F324B] pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#4D8EF7]/15 border border-[#4D8EF7]/30 flex items-center justify-center text-[#4D8EF7]">
+                  <ImageIcon size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold font-display uppercase text-white flex items-center gap-2">
+                    Update Tournament Banner
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    {selectedTournamentForBanner.title} • {selectedTournamentForBanner.game}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedTournamentForBanner(null)}
+                className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-[#1F324B]/50 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {editBannerSuccess ? (
+              <div className="py-8 text-center space-y-3">
+                <CheckCircle2 size={40} className="text-[#5BD19B] mx-auto animate-bounce" />
+                <h4 className="text-lg font-bold font-display uppercase text-white">Banner Updated Successfully!</h4>
+                <p className="text-xs text-zinc-400">The new tournament image is now live across the platform.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSaveEditBanner} className="space-y-4">
+                {/* Mode Selector */}
+                <div className="flex items-center gap-1 bg-[#152234] p-1 rounded-xl border border-[#1F324B]">
+                  <button
+                    type="button"
+                    onClick={() => setEditBannerMode('preset')}
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-1.5 ${
+                      editBannerMode === 'preset'
+                        ? 'bg-[#4D8EF7] text-white shadow-sm'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Sparkles size={12} /> Curated Presets
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditBannerMode('upload')}
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-1.5 ${
+                      editBannerMode === 'upload'
+                        ? 'bg-[#4D8EF7] text-white shadow-sm'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Upload size={12} /> Upload File
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditBannerMode('url')}
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-bold uppercase transition-all flex items-center justify-center gap-1.5 ${
+                      editBannerMode === 'url'
+                        ? 'bg-[#4D8EF7] text-white shadow-sm'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Link2 size={12} /> Direct URL
+                  </button>
+                </div>
+
+                {/* Live Banner Preview Box */}
+                <div className="relative w-full h-40 rounded-2xl overflow-hidden border border-[#1F324B] bg-black/50 shadow-inner">
+                  <img
+                    src={editBannerUrl || GAME_BANNER_PRESETS[selectedTournamentForBanner.game]?.[0]?.url}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+                  <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-bold text-white uppercase tracking-wider">
+                    <span className="w-2 h-2 rounded-full bg-[#5BD19B] animate-pulse" /> Live Preview
+                  </div>
+                  <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between text-xs text-white drop-shadow">
+                    <span className="font-display font-black uppercase truncate">{selectedTournamentForBanner.title}</span>
+                    <Badge variant="blue" size="sm">{selectedTournamentForBanner.game}</Badge>
+                  </div>
+                </div>
+
+                {/* Preset Themes Mode */}
+                {editBannerMode === 'preset' && (
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-bold uppercase text-zinc-400">
+                      Pick a theme for {selectedTournamentForBanner.game}:
+                    </span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {(GAME_BANNER_PRESETS[selectedTournamentForBanner.game] || []).map((preset) => {
+                        const isSelected = editBannerUrl === preset.url;
+                        return (
+                          <button
+                            key={preset.url}
+                            type="button"
+                            onClick={() => setEditBannerUrl(preset.url)}
+                            className={`group relative h-20 rounded-xl overflow-hidden border transition-all text-left ${
+                              isSelected
+                                ? 'border-[#5BD19B] ring-2 ring-[#5BD19B]/30 shadow-[0_0_12px_rgba(91,209,155,0.3)]'
+                                : 'border-[#1F324B] hover:border-zinc-400 opacity-70 hover:opacity-100'
+                            }`}
+                          >
+                            <img
+                              src={preset.url}
+                              alt={preset.label}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                            <div className="absolute bottom-1 left-1.5 right-1.5 text-[10px] font-bold text-white leading-tight truncate">
+                              {preset.label}
+                            </div>
+                            {isSelected && (
+                              <div className="absolute top-1 right-1 bg-[#5BD19B] text-[#0B131E] rounded-full p-0.5">
+                                <Check size={10} strokeWidth={3} />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload File Mode */}
+                {editBannerMode === 'upload' && (
+                  <div className="space-y-2">
+                    <label className="block w-full border-2 border-dashed border-[#1F324B] hover:border-[#4D8EF7] rounded-2xl p-5 text-center cursor-pointer transition-colors bg-[#111C2B]/50 hover:bg-[#111C2B]">
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/jpg"
+                        className="hidden"
+                        onChange={(e) => handleBannerFileUpload(e, true)}
+                        disabled={isUploadingEditBanner}
+                      />
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <div className="w-10 h-10 rounded-full bg-[#4D8EF7]/10 text-[#4D8EF7] flex items-center justify-center">
+                          {isUploadingEditBanner ? (
+                            <RefreshCw size={18} className="animate-spin" />
+                          ) : (
+                            <Upload size={18} />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white">
+                            {isUploadingEditBanner ? 'Uploading and optimizing...' : 'Click to choose image file from device'}
+                          </p>
+                          <p className="text-[10px] text-zinc-400 mt-0.5">
+                            Supports PNG, JPG, or WEBP (Max 10MB)
+                          </p>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                )}
+
+                {/* Direct URL Mode */}
+                {editBannerMode === 'url' && (
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-bold uppercase text-zinc-400">
+                      Banner Image URL
+                    </label>
+                    <div className="relative">
+                      <Link2 size={14} className="absolute left-3.5 top-3 text-zinc-500" />
+                      <input
+                        type="url"
+                        value={editBannerUrl}
+                        onChange={(e) => setEditBannerUrl(e.target.value)}
+                        placeholder="https://example.com/banner.jpg"
+                        className="w-full bg-[#111C2B] border border-[#1F324B] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#4D8EF7]"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {editBannerError && (
+                  <p className="text-xs text-red-400 flex items-center gap-1.5">
+                    <AlertTriangle size={13} /> {editBannerError}
+                  </p>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="md"
+                    fullWidth
+                    onClick={() => setSelectedTournamentForBanner(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="md"
+                    fullWidth
+                    disabled={isSavingBanner || isUploadingEditBanner}
+                  >
+                    {isSavingBanner ? 'Saving...' : 'Save Banner Image'}
+                  </Button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

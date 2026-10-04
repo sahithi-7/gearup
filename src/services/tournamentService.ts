@@ -155,6 +155,38 @@ export const tournamentService = {
     return result.user;
   },
 
+  async requestPasswordReset(identifier: string): Promise<{
+    success: boolean;
+    message: string;
+    masked_email: string;
+    target_email: string;
+    preview_url?: string;
+  }> {
+    const res = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to request password reset code');
+    return result;
+  },
+
+  async resetPasswordWithOtp(data: {
+    identifier: string;
+    otp: string;
+    newPassword: string;
+  }): Promise<{ success: boolean; message: string; user: User }> {
+    const res = await fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to reset password');
+    return result;
+  },
+
   async updateUserRole(requesterId: string, userId: string, role: Role): Promise<User> {
     const res = await fetch(`/api/users/${userId}/role`, {
       method: 'PUT',
@@ -551,6 +583,62 @@ export const tournamentService = {
       return true;
     }
     return false;
+  },
+
+  async uploadTournamentBanner(file: File): Promise<string> {
+    const base64Data: string = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Data, filename: file.name })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.url) return data.url;
+      }
+    } catch {
+      // Fallback to base64 Data URL if backend upload is unavailable
+    }
+
+    return base64Data;
+  },
+
+  async updateTournamentBanner(tournamentId: string, bannerUrl: string): Promise<{ success: boolean; tournament?: Tournament }> {
+    try {
+      const res = await fetch(`/api/tournaments/${tournamentId}/banner`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ banner_url: bannerUrl })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const idx = cachedTournaments.findIndex(t => t.id === tournamentId);
+        if (idx !== -1 && data.tournament) {
+          cachedTournaments[idx] = data.tournament;
+          localStorage.setItem(TOURNAMENTS_STORAGE_KEY, JSON.stringify(cachedTournaments));
+          notifyListeners();
+        }
+        return { success: true, tournament: data.tournament };
+      }
+    } catch {
+      // offline fallback
+    }
+
+    const idx = cachedTournaments.findIndex(t => t.id === tournamentId);
+    if (idx !== -1) {
+      cachedTournaments[idx].banner_url = bannerUrl;
+      localStorage.setItem(TOURNAMENTS_STORAGE_KEY, JSON.stringify(cachedTournaments));
+      notifyListeners();
+      return { success: true, tournament: cachedTournaments[idx] };
+    }
+    return { success: false };
   },
 
   // Wallet API

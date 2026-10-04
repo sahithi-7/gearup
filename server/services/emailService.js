@@ -682,3 +682,140 @@ export async function sendTestEmail(recipientEmail, forceRefresh = true) {
   };
 }
 
+/**
+ * Dispatches a password reset OTP verification code email
+ */
+export async function sendPasswordResetOtpEmail({
+  emailId,
+  recipientEmail,
+  username,
+  otp,
+  db,
+  saveDb
+}) {
+  const defaultFrom = process.env.SMTP_USER
+    ? `"GearUp Esports" <${process.env.SMTP_USER}>`
+    : '"GearUp Esports" <no-reply@gearup.gg>';
+  const fromAddress = process.env.SMTP_FROM || defaultFrom;
+  const subject = `🔐 ${otp} is your GearUp Password Reset Code`;
+
+  const contentHtml = `
+    <h2 style="color:#FFFFFF;margin-top:0;font-size:20px;font-weight:800;text-transform:uppercase;">
+      Password Reset Request
+    </h2>
+    <p style="font-size:14px;line-height:1.6;color:#CBD5E1;">
+      Hey <strong>${username || 'Player'}</strong>, we received a request to reset your GearUp Esports account password.
+      Please enter the single-use 6-digit verification code below to set your new password:
+    </p>
+
+    <div style="background-color: #0B131E; border: 2px dashed #5BD19B; border-radius: 12px; padding: 22px; text-align: center; margin: 24px 0;">
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #94A3B8; text-transform: uppercase; margin-bottom: 6px;">
+        Your Password Reset Code (OTP)
+      </div>
+      <div style="font-size: 38px; font-weight: 900; letter-spacing: 12px; color: #5BD19B; font-family: monospace; padding: 6px 0;">
+        ${otp}
+      </div>
+      <div style="font-size: 12px; color: #F59E0B; font-weight: 700; margin-top: 6px;">
+        ⏱️ Valid for 10 minutes
+      </div>
+    </div>
+
+    <div class="notice-box">
+      <strong>⚠️ SECURITY NOTICE:</strong><br>
+      • Never share this OTP code with anyone. GearUp admins will never ask for your password or reset codes.<br>
+      • If you did not request a password reset, you can safely ignore this email. Your account remains completely secure.
+    </div>
+
+    <div style="text-align:center;margin-top:24px;">
+      <a href="http://localhost:5173" class="btn" target="_blank">Open GearUp Platform</a>
+    </div>
+  `;
+
+  const html = buildEmailTemplate({
+    title: subject,
+    badge: 'PASSWORD RESET',
+    contentHtml
+  });
+
+  const text = `
+GEARUP ESPORTS - PASSWORD RESET VERIFICATION
+--------------------------------------------
+Hello ${username || 'Player'},
+
+Your One-Time Password (OTP) to reset your password is:
+
+>>> ${otp} <<<
+
+This code is valid for 10 minutes.
+If you did not request this reset, your account is safe and you can ignore this email.
+`;
+
+  const recordId = emailId || `email-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+  const emailRecord = {
+    id: recordId,
+    type: 'PASSWORD_RESET',
+    recipient: recipientEmail,
+    subject,
+    username: username || '',
+    otp,
+    timestamp: new Date().toISOString(),
+    preview_url: null,
+    message_id: null,
+    status: 'SENDING',
+    html
+  };
+
+  if (db) {
+    if (!Array.isArray(db.sent_emails)) db.sent_emails = [];
+    const existingIdx = db.sent_emails.findIndex(e => e.id === recordId);
+    if (existingIdx !== -1) {
+      db.sent_emails[existingIdx] = emailRecord;
+    } else {
+      db.sent_emails.unshift(emailRecord);
+    }
+    if (saveDb) saveDb(db);
+  }
+
+  let info;
+  let previewUrl = null;
+
+  try {
+    const transporter = await getTransporter();
+    info = await transporter.sendMail({
+      from: fromAddress,
+      to: recipientEmail,
+      subject,
+      text,
+      html
+    });
+
+    if (nodemailer.getTestMessageUrl) {
+      previewUrl = nodemailer.getTestMessageUrl(info) || null;
+    }
+
+    emailRecord.preview_url = previewUrl;
+    emailRecord.message_id = info?.messageId || null;
+    emailRecord.status = 'SENT';
+    if (saveDb) saveDb(db);
+
+    console.log(`[EmailService] ✉️ Password reset OTP email delivered to: ${recipientEmail} (${info.messageId})`);
+    return {
+      success: true,
+      emailRecord,
+      previewUrl
+    };
+  } catch (err) {
+    console.error(`[EmailService] ❌ Failed delivering OTP email to ${recipientEmail}:`, err.message);
+    emailRecord.status = 'FAILED';
+    emailRecord.error = err.message;
+    if (saveDb) saveDb(db);
+
+    return {
+      success: false,
+      error: err.message,
+      emailRecord
+    };
+  }
+}
+
+

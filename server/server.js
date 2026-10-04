@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { DatabaseSync } from 'node:sqlite';
-import { sendTournamentRegistrationEmail, sendWelcomeRegistrationEmail, verifySmtp, sendTestEmail } from './services/emailService.js';
+import { sendTournamentRegistrationEmail, sendWelcomeRegistrationEmail, verifySmtp, sendTestEmail, sendPasswordResetOtpEmail } from './services/emailService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,13 +35,31 @@ const PORT = process.env.PORT || 3001;
 const DB_DIR = path.join(__dirname, 'data');
 const SQLITE_PATH = path.join(DB_DIR, 'gearup.sqlite');
 const LEGACY_DB_PATH = path.join(DB_DIR, 'db.json');
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 const SUPPORTED_GAMES = ['BGMI', 'Free Fire MAX'];
+
+// In-memory store for OTP password reset requests
+const passwordResetStore = new Map();
+
+function maskEmail(email) {
+  if (!email || !email.includes('@')) return email;
+  const [local, domain] = email.split('@');
+  if (local.length <= 2) return `${local[0]}*@${domain}`;
+  const start = local.slice(0, 2);
+  const end = local.slice(-1);
+  return `${start}${'*'.repeat(Math.max(3, local.length - 3))}${end}@${domain}`;
+}
 
 const app = express();
 const server = http.createServer(app);
 
 app.use(cors({ origin: '*' }));
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+app.use('/uploads', express.static(UPLOADS_DIR));
 
 const io = new Server(server, {
   cors: {
@@ -698,6 +716,59 @@ app.put('/api/tournaments/:id/prizes', (req, res) => {
   res.json({ success: true, tournament });
 });
 
+// 7b. Update Tournament Banner Image
+app.put('/api/tournaments/:id/banner', (req, res) => {
+  const { banner_url } = req.body;
+  if (!banner_url) {
+    return res.status(400).json({ error: 'banner_url is required' });
+  }
+  const index = db.tournaments.findIndex(t => t.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Tournament not found' });
+  }
+
+  const tournament = db.tournaments[index];
+  tournament.banner_url = banner_url;
+  db.tournaments[index] = tournament;
+  saveDb(db);
+
+  io.emit('tournament:updated', tournament);
+  console.log(`[Admin] 🖼️ Updated banner image for tournament: ${tournament.title} (${tournament.id})`);
+  res.json({ success: true, tournament });
+});
+
+// 7c. Direct Image Upload for Tournament Banners
+app.post('/api/upload', (req, res) => {
+  const { image } = req.body;
+  if (!image || typeof image !== 'string') {
+    return res.status(400).json({ error: 'Valid image base64 data string is required' });
+  }
+  try {
+    const matches = image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    let ext = 'jpg';
+    let buffer;
+    if (matches && matches.length === 3) {
+      const mime = matches[1];
+      ext = mime.split('/')[1] || 'jpg';
+      if (ext === 'jpeg') ext = 'jpg';
+      if (ext === 'svg+xml') ext = 'svg';
+      buffer = Buffer.from(matches[2], 'base64');
+    } else {
+      buffer = Buffer.from(image, 'base64');
+    }
+
+    const safeName = `banner-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const filePath = path.join(UPLOADS_DIR, safeName);
+    fs.writeFileSync(filePath, buffer);
+    const publicUrl = `/uploads/${safeName}`;
+    console.log(`[Upload] 📸 Saved tournament banner image: ${publicUrl} (${buffer.length} bytes)`);
+    res.json({ success: true, url: publicUrl });
+  } catch (err) {
+    console.error('[Upload] Error saving uploaded image:', err);
+    res.status(500).json({ error: 'Failed to process image upload' });
+  }
+});
+
 // 7. Register for Tournament
 app.post('/api/tournaments/:id/register', async (req, res) => {
   const tournamentId = req.params.id;
@@ -949,6 +1020,115 @@ app.post('/api/login', (req, res) => {
 
   res.json({
     success: true,
+    user: {
+      ...user,
+      wallet_balance: db.wallets[user.id]?.balance ?? user.wallet_balance ?? 0
+    }
+  });
+});
+
+// 10b. Forgot Password - Request 6-digit OTP
+app.post('/api/auth/forgot-password', async (req, res) => {
+  const { identifier } = req.body;
+  const cleanId = (identifier || '').trim().toLowerCase();
+  if (!cleanId) {
+    return res.status(400).json({ error: 'Please enter your registered email or username' });
+  }
+
+  const user = db.users.find(u =>
+    u.email.toLowerCase() === cleanId || u.username.toLowerCase() === cleanId
+  );
+
+  if (!user) {
+    return res.status(404).json({ error: 'No account registered with that email or username' });
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = Date.now() + 15 * 60 * 1000; // 15 mins validity
+  passwordResetStore.set(user.email.toLowerCase(), {
+    otp,
+    expiresAt,
+    username: user.username,
+    userId: user.id
+  });
+
+  const emailParts = user.email.split('@');
+  const maskedName = emailParts[0].length > 2 
+    ? emailParts[0][0] + '*'.repeat(Math.max(emailParts[0].length - 2, 3)) + emailParts[0].slice(-1)
+    : emailParts[0][0] + '***';
+  const maskedEmail = `${maskedName}@${emailParts[1]}`;
+
+  console.log(`[Auth] 🔑 Generated OTP [${otp}] for password reset: ${user.username} (${user.email})`);
+
+  let emailResult = null;
+  try {
+    emailResult = await sendPasswordResetOtpEmail({
+      emailId: `email-reset-${Date.now()}`,
+      recipientEmail: user.email,
+      username: user.username,
+      otp,
+      db,
+      saveDb
+    });
+  } catch (err) {
+    console.error('[Auth] Failed to dispatch password reset email:', err);
+  }
+
+  res.json({
+    success: true,
+    message: `Password reset verification code has been sent to ${maskedEmail}`,
+    masked_email: maskedEmail,
+    target_email: user.email,
+    preview_url: emailResult?.preview_url || undefined
+  });
+});
+
+// 10c. Reset Password using OTP
+app.post('/api/auth/reset-password', (req, res) => {
+  const { identifier, otp, newPassword } = req.body;
+  const cleanId = (identifier || '').trim().toLowerCase();
+  const cleanOtp = (otp || '').trim();
+  const cleanPass = (newPassword || '').trim();
+
+  if (!cleanId || !cleanOtp || !cleanPass) {
+    return res.status(400).json({ error: 'Identifier, verification code, and new password are required' });
+  }
+
+  if (cleanPass.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+  }
+
+  const user = db.users.find(u =>
+    u.email.toLowerCase() === cleanId || u.username.toLowerCase() === cleanId
+  );
+
+  if (!user) {
+    return res.status(404).json({ error: 'Account not found' });
+  }
+
+  const resetRecord = passwordResetStore.get(user.email.toLowerCase());
+  if (!resetRecord) {
+    return res.status(400).json({ error: 'No active reset request found. Please request a new verification code.' });
+  }
+
+  if (Date.now() > resetRecord.expiresAt) {
+    passwordResetStore.delete(user.email.toLowerCase());
+    return res.status(400).json({ error: 'Verification code has expired. Please request a new one.' });
+  }
+
+  if (resetRecord.otp !== cleanOtp) {
+    return res.status(400).json({ error: 'Invalid verification code. Please check and try again.' });
+  }
+
+  user.password = cleanPass;
+  saveDb(db);
+  passwordResetStore.delete(user.email.toLowerCase());
+
+  console.log(`[Auth] ✅ Successfully reset password for user: ${user.username} (${user.email})`);
+
+  res.json({
+    success: true,
+    message: 'Password reset successfully! You can now log in with your new password.',
     user: {
       ...user,
       wallet_balance: db.wallets[user.id]?.balance ?? user.wallet_balance ?? 0
@@ -1419,6 +1599,24 @@ app.all('/api/email/test', async (req, res) => {
     });
   }
 });
+
+// Auto-redirect port 5174 to 5173 so users don't encounter ERR_CONNECTION_REFUSED
+try {
+  const redirectServer = http.createServer((req, res) => {
+    res.writeHead(302, {
+      Location: `http://localhost:5173${req.url || ''}`
+    });
+    res.end();
+  });
+  redirectServer.on('error', (err) => {
+    // Port 5174 might be used or restricted, ignore safely
+  });
+  redirectServer.listen(5174, '0.0.0.0', () => {
+    console.log(`🔀 Port 5174 auto-redirect active -> forwarding requests to http://localhost:5173`);
+  });
+} catch (e) {
+  // Silent fallback
+}
 
 // Start server
 server.listen(PORT, '0.0.0.0', () => {
