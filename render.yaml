@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: gearup-esports
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 465
+      - key: SMTP_USER
+        value: gearUpesportsofficial@gmail.com
+      - key: SMTP_PASS
+        value: ljpb nlie egac hhxb
+      - key: SMTP_FROM
+        value: '"GearUp Esports" <gearUpesportsofficial@gmail.com>'
+      - key: ADMIN_UPI_ID
+        value: 6303134462@axl
+      - key: ADMIN_PAYEE_NAME
+        value: GearUp Esports
