@@ -13,8 +13,7 @@ import {
   CheckCircle2,
   ArrowLeft,
   ExternalLink,
-  Flame,
-  Swords
+  Flame
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { tournamentService } from '../services/tournamentService';
@@ -239,17 +238,24 @@ export const AuthPortalView: React.FC<AuthPortalViewProps> = ({
             <span>Official Esports Arena</span>
           </div>
 
-          <div className="flex items-center justify-center gap-2.5 pt-1">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5BD19B] to-[#3BA878] text-[#070D15] flex items-center justify-center shadow-[0_0_20px_rgba(91,209,155,0.4)]">
-              <Swords size={22} className="stroke-[2.5]" />
+          <div className="flex items-center justify-center gap-3 pt-1">
+            <img
+              src="/logo.png"
+              alt="GearUp Esports Logo"
+              className="w-12 h-12 object-contain rounded-xl shadow-[0_0_25px_rgba(91,209,155,0.4)] drop-shadow-[0_0_12px_rgba(91,209,155,0.5)] border border-[#5BD19B]/30"
+            />
+            <div className="flex flex-col text-left leading-none">
+              <h1 className="text-3xl sm:text-4xl font-black font-display tracking-tight text-white uppercase">
+                GEAR<span className="text-[#5BD19B]">UP</span>
+              </h1>
+              <span className="text-[10px] sm:text-[11px] font-extrabold tracking-[0.28em] text-[#5BD19B] uppercase font-sans mt-0.5">
+                ESPORTS
+              </span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black font-display tracking-tight text-white uppercase">
-              GEAR<span className="text-[#5BD19B]">UP</span>
-            </h1>
           </div>
 
-          <p className="text-xs sm:text-sm text-zinc-400 max-w-xs mx-auto">
-            BGMI • Free Fire • COD • Valorant
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-xs mx-auto font-medium">
+            BGMI • Free Fire
           </p>
         </div>
 
