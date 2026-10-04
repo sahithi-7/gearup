@@ -4,15 +4,17 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     envVars:
-      - key: PORT
-        value: 3001
+      - key: NODE_VERSION
+        value: 22.13.0
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
       - key: SMTP_HOST
         value: smtp.gmail.com
       - key: SMTP_PORT
-        value: 465
+        value: "465"
       - key: SMTP_USER
         value: gearUpesportsofficial@gmail.com
       - key: SMTP_PASS

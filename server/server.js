@@ -5,7 +5,15 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { DatabaseSync } from 'node:sqlite';
+
+let DatabaseSync = null;
+try {
+  const sqliteMod = await import('node:sqlite');
+  DatabaseSync = sqliteMod.DatabaseSync || null;
+} catch {
+  // Gracefully fallback to JSON file storage if runtime lacks node:sqlite
+}
+
 import { sendTournamentRegistrationEmail, sendWelcomeRegistrationEmail, verifySmtp, sendTestEmail, sendPasswordResetOtpEmail } from './services/emailService.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -227,43 +235,56 @@ function loadDb() {
     fs.mkdirSync(DB_DIR, { recursive: true });
   }
 
-  database = new DatabaseSync(SQLITE_PATH);
-  database.exec(`
-    PRAGMA journal_mode = WAL;
-    CREATE TABLE IF NOT EXISTS application_state (
-      id INTEGER PRIMARY KEY CHECK (id = 1),
-      payload TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    );
-  `);
-
-  const existing = database.prepare('SELECT payload FROM application_state WHERE id = 1').get();
-  if (existing) return JSON.parse(existing.payload);
-
   let initialData = JSON.parse(JSON.stringify(SEED_DATA));
   if (fs.existsSync(LEGACY_DB_PATH)) {
     try {
       initialData = JSON.parse(fs.readFileSync(LEGACY_DB_PATH, 'utf-8'));
-      console.log('Migrated existing data from db.json to SQLite.');
     } catch (err) {
-      console.warn('Could not migrate db.json; starting with seed data.', err);
+      console.warn('Could not read db.json; starting with seed data.', err);
     }
   }
 
-  database.prepare(
-    'INSERT INTO application_state (id, payload, updated_at) VALUES (1, ?, ?)'
-  ).run(JSON.stringify(initialData), new Date().toISOString());
+  if (DatabaseSync) {
+    try {
+      database = new DatabaseSync(SQLITE_PATH);
+      database.exec(`
+        PRAGMA journal_mode = WAL;
+        CREATE TABLE IF NOT EXISTS application_state (
+          id INTEGER PRIMARY KEY CHECK (id = 1),
+          payload TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+      `);
+
+      const existing = database.prepare('SELECT payload FROM application_state WHERE id = 1').get();
+      if (existing) return JSON.parse(existing.payload);
+
+      database.prepare(
+        'INSERT INTO application_state (id, payload, updated_at) VALUES (1, ?, ?)'
+      ).run(JSON.stringify(initialData), new Date().toISOString());
+    } catch (err) {
+      console.warn('[Database] SQLite init failed, falling back to JSON:', err.message);
+      database = null;
+    }
+  }
+
   return initialData;
 }
 
 let isSavingFile = false;
 
 function saveDb(data) {
-  database.prepare(
-    'UPDATE application_state SET payload = ?, updated_at = ? WHERE id = 1'
-  ).run(JSON.stringify(data), new Date().toISOString());
+  if (database) {
+    try {
+      database.prepare(
+        'UPDATE application_state SET payload = ?, updated_at = ? WHERE id = 1'
+      ).run(JSON.stringify(data), new Date().toISOString());
+    } catch (err) {
+      console.warn('[Database] SQLite save failed:', err.message);
+    }
+  }
 
-  // Also keep db.json updated for easy human inspection and editing
+  // Also keep db.json updated for persistence and human inspection
   try {
     isSavingFile = true;
     fs.writeFileSync(LEGACY_DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
