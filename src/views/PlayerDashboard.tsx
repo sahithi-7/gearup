@@ -41,7 +41,7 @@ export const PlayerDashboard: React.FC<PlayerDashboardProps> = ({
           Sign in to view your registered tournaments, live Room IDs, and payout wallet.
         </p>
         <Button variant="primary" fullWidth onClick={onLogin}>
-          Login as Demo Player
+          Sign In to Your Account
         </Button>
       </div>
     );

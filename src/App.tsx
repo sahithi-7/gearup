@@ -17,6 +17,7 @@ import { OrganiserPortal } from './views/OrganiserPortal';
 import { RegistrationModal } from './components/tournaments/RegistrationModal';
 import { RegisterView } from './views/RegisterView';
 import { LoginModal } from './components/auth/LoginModal';
+import { AuthPortalView } from './views/AuthPortalView';
 import { Button } from './components/common/Button';
 import { ShieldAlert } from 'lucide-react';
 
@@ -153,7 +154,7 @@ export default function App() {
     if (authenticated.role === 'ADMIN' || authenticated.role === 'ORGANISER') {
       navigate('/dashboard/organiser');
     } else {
-      navigate('/dashboard/player');
+      navigate('/');
     }
     return authenticated;
   };
@@ -171,14 +172,14 @@ export default function App() {
     if (selectedUser.role === 'ORGANISER' || selectedUser.is_admin) {
       navigate('/dashboard/organiser');
     } else {
-      navigate('/dashboard/player');
+      navigate('/');
     }
   };
 
   const handleRegisteredUser = (registeredUser: User) => {
     setUser(registeredUser);
     setRegistrations([]);
-    navigate(registeredUser.role === 'ORGANISER' || registeredUser.is_admin ? '/dashboard/organiser' : '/dashboard/player');
+    navigate(registeredUser.role === 'ORGANISER' || registeredUser.is_admin ? '/dashboard/organiser' : '/');
   };
 
   const handleOpenRegistration = (tournament: Tournament) => {
@@ -399,6 +400,26 @@ export default function App() {
       </div>
     );
   };
+
+  // Mandatory Auth Gate: When unauthenticated, the first page must strictly be Login or Register Player
+  if (!user) {
+    return (
+      <AuthPortalView
+        initialMode={currentPath === '/register' ? 'REGISTER' : 'LOGIN'}
+        onLogin={handleLoginSubmit}
+        onRegistered={handleRegisteredUser}
+        onResetSuccess={(updatedUser) => {
+          setUser(updatedUser);
+          soundFx.playSuccess();
+          if (updatedUser.role === 'ADMIN' || updatedUser.role === 'ORGANISER') {
+            navigate('/dashboard/organiser');
+          } else {
+            navigate('/');
+          }
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0B131E] text-zinc-100 flex flex-col font-sans selection:bg-[#5BD19B] selection:text-black">
