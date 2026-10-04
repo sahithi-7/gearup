@@ -11,9 +11,15 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "db": "node server/manageDb.js"
+    "db": "node server/manageDb.js",
+    "cap:build": "npm run build && cap copy android",
+    "cap:sync": "npm run build && cap sync android",
+    "cap:open": "cap open android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
     "concurrently": "^10.0.5",
     "cors": "^2.8.6",
     "express": "^5.2.1",
