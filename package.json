@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "db": "node server/manageDb.js",
+    "start": "node server/server.js",
     "cap:build": "npm run build && cap copy android",
     "cap:sync": "npm run build && cap sync android",
     "cap:open": "cap open android"

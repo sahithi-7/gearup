@@ -1618,6 +1618,18 @@ try {
   // Silent fallback
 }
 
+// 16. In production, serve the built Vite frontend assets
+const CLIENT_DIST = path.join(__dirname, '..', 'dist');
+if (fs.existsSync(CLIENT_DIST)) {
+  app.use(express.static(CLIENT_DIST));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/socket.io')) {
+      return next();
+    }
+    res.sendFile(path.join(CLIENT_DIST, 'index.html'));
+  });
+}
+
 // Start server
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 GearUp Real-Time Backend running on http://0.0.0.0:${PORT}`);
