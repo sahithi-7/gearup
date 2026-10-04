@@ -159,8 +159,10 @@ export const tournamentService = {
     success: boolean;
     message: string;
     masked_email: string;
-    target_email: string;
+    target_email?: string;
     preview_url?: string;
+    dev_otp?: string;
+    delivery_mode?: string;
   }> {
     const res = await fetch('/api/auth/forgot-password', {
       method: 'POST',

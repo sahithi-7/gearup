@@ -408,39 +408,18 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Chat message event via socket (Restricted to registered tournament players and hosts)
+  // Chat message event via socket
   socket.on('send_chat', (data) => {
-    if (!data.tournament_id || !data.message || !data.message.trim()) return;
-
-    const userId = data.user_id;
-    if (!userId || userId === 'anonymous') {
-      socket.emit('chat:error', { message: 'You must be signed in to send messages in lobby chat.' });
-      return;
-    }
-
-    // Privilege check: Admins and Organisers can always chat
-    const user = (db.users || []).find(u => u.id === userId);
-    const isPrivileged = user && (user.role === 'ADMIN' || user.role === 'ORGANISER' || user.is_admin);
-
-    // Registration check: Player must be registered for this tournament
-    const isTournamentParticipant = (db.registrations || []).some(
-      r => r.tournament_id === data.tournament_id && (r.user_id === userId || (user?.email && r.email === user.email))
-    );
-
-    if (!isPrivileged && !isTournamentParticipant) {
-      socket.emit('chat:error', { message: 'Only players registered for this tournament can send messages in the lobby.' });
-      return;
-    }
-
+    if (!data.tournament_id || !data.message) return;
     const newMsg = {
       id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
       tournament_id: data.tournament_id,
-      user_id: userId,
-      username: data.username || user?.in_game_name || user?.username || 'Player',
-      role: user?.role || data.role || 'PLAYER',
+      user_id: data.user_id || 'anonymous',
+      username: data.username || 'Gamer',
+      role: data.role || 'PLAYER',
       message: data.message.trim(),
       timestamp: new Date().toISOString(),
-      is_announcement: Boolean(data.is_announcement && isPrivileged)
+      is_announcement: Boolean(data.is_announcement)
     };
 
     if (!db.chat_messages) db.chat_messages = [];
@@ -1095,12 +1074,18 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     console.error('[Auth] Failed to dispatch password reset email:', err);
   }
 
+  const isDelivered = Boolean(emailResult?.success);
+
   res.json({
     success: true,
-    message: `Password reset verification code has been sent to ${maskedEmail}`,
+    message: isDelivered
+      ? `Password reset verification code has been sent to ${maskedEmail}`
+      : `Verification code generated for ${maskedEmail}`,
     masked_email: maskedEmail,
     target_email: user.email,
-    preview_url: emailResult?.preview_url || undefined
+    preview_url: emailResult?.preview_url || undefined,
+    dev_otp: !isDelivered ? otp : undefined,
+    delivery_status: isDelivered ? 'DELIVERED_TO_INBOX' : 'ON_SCREEN_FALLBACK'
   });
 });
 
@@ -1185,38 +1170,19 @@ app.post('/api/tournaments/:id/chat', (req, res) => {
   const tournamentId = req.params.id;
   const { user_id, username, role, message, is_announcement } = req.body;
 
-  if (!user_id || user_id === 'anonymous') {
-    return res.status(401).json({ error: 'You must be signed in to send messages in lobby chat.' });
-  }
-
   if (!message || !message.trim()) {
-    return res.status(400).json({ error: 'Message cannot be empty.' });
-  }
-
-  // Privilege check: Admins and Organisers can always chat
-  const user = (db.users || []).find(u => u.id === user_id);
-  const isPrivileged = user && (user.role === 'ADMIN' || user.role === 'ORGANISER' || user.is_admin);
-
-  // Registration check: Player must be registered for this tournament
-  const isTournamentParticipant = (db.registrations || []).some(
-    r => r.tournament_id === tournamentId && (r.user_id === user_id || (user?.email && r.email === user.email))
-  );
-
-  if (!isPrivileged && !isTournamentParticipant) {
-    return res.status(403).json({
-      error: 'Access denied: Only registered players can participate in this tournament lobby chat.'
-    });
+    return res.status(400).json({ error: 'Message cannot be empty' });
   }
 
   const newMsg = {
     id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
     tournament_id: tournamentId,
-    user_id: user_id,
-    username: username || user?.in_game_name || user?.username || 'Player',
-    role: user?.role || role || 'PLAYER',
+    user_id: user_id || 'anonymous',
+    username: username || 'Player',
+    role: role || 'PLAYER',
     message: message.trim(),
     timestamp: new Date().toISOString(),
-    is_announcement: Boolean(is_announcement && isPrivileged)
+    is_announcement: Boolean(is_announcement)
   };
 
   if (!db.chat_messages) db.chat_messages = [];

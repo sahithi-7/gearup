@@ -13,7 +13,8 @@ import {
   CheckCircle2,
   ArrowLeft,
   ExternalLink,
-  Flame
+  Flame,
+  Swords
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { tournamentService } from '../services/tournamentService';
@@ -159,7 +160,12 @@ export const AuthPortalView: React.FC<AuthPortalViewProps> = ({
       const res = await tournamentService.requestPasswordReset(cleanId);
       setMaskedEmail(res.masked_email || res.target_email || 'your email');
       setPreviewUrl(res.preview_url || null);
-      setSuccessMsg(res.message || 'Verification code sent successfully!');
+      if (res.dev_otp) {
+        setOtp(res.dev_otp);
+        setSuccessMsg(`Your verification code is: ${res.dev_otp} (Auto-filled below)`);
+      } else {
+        setSuccessMsg(res.message || 'Verification code sent to your email! (Check Inbox & Spam folder)');
+      }
       setResendCooldown(60);
       soundFx.playChatPop();
       setMode('FORGOT_VERIFY');
@@ -234,18 +240,16 @@ export const AuthPortalView: React.FC<AuthPortalViewProps> = ({
           </div>
 
           <div className="flex items-center justify-center gap-2.5 pt-1">
-            <img
-              src="/logo.png"
-              alt="GearUp Esports Logo"
-              className="w-11 h-11 object-contain rounded-xl shadow-[0_0_20px_rgba(91,209,155,0.35)]"
-            />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5BD19B] to-[#3BA878] text-[#070D15] flex items-center justify-center shadow-[0_0_20px_rgba(91,209,155,0.4)]">
+              <Swords size={22} className="stroke-[2.5]" />
+            </div>
             <h1 className="text-3xl sm:text-4xl font-black font-display tracking-tight text-white uppercase">
               GEAR<span className="text-[#5BD19B]">UP</span>
             </h1>
           </div>
 
           <p className="text-xs sm:text-sm text-zinc-400 max-w-xs mx-auto">
-            BGMI • Free Fire
+            BGMI • Free Fire • COD • Valorant
           </p>
         </div>
 

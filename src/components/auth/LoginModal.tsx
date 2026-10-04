@@ -134,7 +134,12 @@ export const AuthModal: React.FC<LoginModalProps> = ({
       const res = await tournamentService.requestPasswordReset(cleanId);
       setMaskedEmail(res.masked_email || res.target_email || 'your email');
       setPreviewUrl(res.preview_url || null);
-      setSuccessMsg(res.message || 'Verification code sent successfully!');
+      if (res.dev_otp) {
+        setOtp(res.dev_otp);
+        setSuccessMsg(`Your verification code is: ${res.dev_otp} (Auto-filled below)`);
+      } else {
+        setSuccessMsg(res.message || 'Verification code sent successfully! (Check Inbox & Spam folder)');
+      }
       setResendCooldown(60);
       soundFx.playChatPop();
       setMode('FORGOT_VERIFY');
