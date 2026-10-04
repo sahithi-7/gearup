@@ -10,7 +10,10 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
+# Environment variables
+.env
+.env.local
+.env.*.local
 cloudflared.exe
 
 # Runtime SQLite database files

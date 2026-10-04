@@ -16,9 +16,11 @@ services:
       - key: SMTP_USER
         value: gearUpesportsofficial@gmail.com
       - key: SMTP_PASS
-        value: ljpb nlie egac hhxb
-      - key: SMTP_FROM
-        value: '"GearUp Esports" <gearUpesportsofficial@gmail.com>'
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        value: 'GearUp Esports <onboarding@resend.dev>'
       - key: ADMIN_UPI_ID
         value: 6303134462@axl
       - key: ADMIN_PAYEE_NAME
