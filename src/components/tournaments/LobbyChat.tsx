@@ -3,25 +3,33 @@ import type { ChatMessage, User } from '../../types';
 import { tournamentService } from '../../services/tournamentService';
 import { socketService } from '../../services/socketService';
 import { soundFx } from '../../utils/sound';
-import { Send, ShieldCheck, Megaphone, User as UserIcon, Sparkles } from 'lucide-react';
+import { Send, ShieldCheck, Megaphone, User as UserIcon, Sparkles, Lock } from 'lucide-react';
 import { Button } from '../common/Button';
 
 interface LobbyChatProps {
   tournamentId: string;
   user: User | null;
+  isRegistered?: boolean;
+  onRegisterPrompt?: () => void;
   onLoginPrompt?: () => void;
 }
 
 export const LobbyChat: React.FC<LobbyChatProps> = ({
   tournamentId,
   user,
+  isRegistered = false,
+  onRegisterPrompt,
   onLoginPrompt
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isAnnouncement, setIsAnnouncement] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [chatError, setChatError] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const isPrivileged = Boolean(user?.role === 'ORGANISER' || user?.is_admin);
+  const canChat = Boolean(user && (isRegistered || isPrivileged));
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -68,8 +76,15 @@ export const LobbyChat: React.FC<LobbyChatProps> = ({
       return;
     }
 
+    if (!canChat) {
+      setChatError('Only players registered for this tournament can send messages.');
+      if (onRegisterPrompt) onRegisterPrompt();
+      return;
+    }
+
     const text = inputText.trim();
     setInputText('');
+    setChatError('');
     setIsSending(true);
 
     try {
@@ -101,6 +116,8 @@ export const LobbyChat: React.FC<LobbyChatProps> = ({
         return [...prev, optimisticMsg];
       });
       setTimeout(scrollToBottom, 50);
+    } catch (err) {
+      setChatError(err instanceof Error ? err.message : 'Unable to send message');
     } finally {
       setIsSending(false);
       setIsAnnouncement(false);
@@ -204,61 +221,117 @@ export const LobbyChat: React.FC<LobbyChatProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Reactions Bar */}
-      <div className="px-3 py-1.5 bg-[#0B131E]/60 border-t border-[#1F324B] flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
-        <span className="text-[10px] uppercase font-bold text-zinc-400 flex-shrink-0">Quick:</span>
-        {['Ready! 🔥', 'Slot Confirmed 👍', 'Room ID please! 🔑', 'GGs 🎯'].map((chip) => (
-          <button
-            key={chip}
-            type="button"
-            onClick={() => handleQuickReaction(chip)}
-            className="px-2 py-0.5 rounded-full bg-[#152234] hover:bg-[#1f324b] text-[11px] text-zinc-300 hover:text-white flex-shrink-0 border border-[#1F324B] transition-colors"
-          >
-            {chip}
-          </button>
-        ))}
-      </div>
-
-      {/* Chat Input Bar */}
-      <form onSubmit={handleSendMessage} className="p-3 bg-[#0B131E] border-t border-[#1F324B] space-y-2">
-        {user?.role === 'ORGANISER' && (
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-1.5 text-xs text-amber-300 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={isAnnouncement}
-                onChange={(e) => setIsAnnouncement(e.target.checked)}
-                className="rounded bg-[#111C2B] border-[#1F324B] text-amber-500 focus:ring-0"
-              />
-              <span className="font-bold flex items-center gap-1">
-                <Megaphone size={12} /> Post as Official Announcement
-              </span>
-            </label>
+      {/* Locked / Registered Only Gate vs Active Chat Bar */}
+      {!user ? (
+        <div className="p-3.5 bg-[#0B131E] border-t border-[#1F324B] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-zinc-400 text-xs">
+            <Lock size={15} className="text-[#5BD19B] flex-shrink-0" />
+            <span>Sign in to participate in tournament lobby chat</span>
           </div>
-        )}
-
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder={user ? "Type your message in lobby..." : "Sign in to chat in lobby..."}
-            disabled={!user || isSending}
-            className="flex-1 bg-[#111C2B] border border-[#1F324B] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#5BD19B] transition-colors disabled:opacity-50"
-          />
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="sm"
-            disabled={!user || !inputText.trim() || isSending}
-            className="px-4 py-2.5 flex-shrink-0"
-          >
-            <Send size={15} />
-            <span className="hidden sm:inline">Send</span>
-          </Button>
+          {onLoginPrompt && (
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={onLoginPrompt}
+              className="text-xs py-1.5 px-3.5 whitespace-nowrap"
+            >
+              Sign In
+            </Button>
+          )}
         </div>
-      </form>
+      ) : !canChat ? (
+        <div className="p-4 bg-[#0B131E] border-t border-[#1F324B] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center flex-shrink-0">
+              <Lock size={16} />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5 justify-center sm:justify-start">
+                <span>Registered Players Only</span>
+                <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-mono font-normal">Restricted</span>
+              </p>
+              <p className="text-[11px] text-zinc-400">
+                Only players registered for this tournament can send messages in this lobby.
+              </p>
+            </div>
+          </div>
+          {onRegisterPrompt && (
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={onRegisterPrompt}
+              className="text-xs font-black font-display uppercase tracking-wider py-2 px-3.5 whitespace-nowrap shadow-[0_0_12px_rgba(91,209,155,0.25)]"
+            >
+              Register for Tournament
+            </Button>
+          )}
+        </div>
+      ) : (
+        <>
+          {/* Quick Reactions Bar */}
+          <div className="px-3 py-1.5 bg-[#0B131E]/60 border-t border-[#1F324B] flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
+            <span className="text-[10px] uppercase font-bold text-zinc-400 flex-shrink-0">Quick:</span>
+            {['Ready! 🔥', 'Slot Confirmed 👍', 'Room ID please! 🔑', 'GGs 🎯'].map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => handleQuickReaction(chip)}
+                className="px-2 py-0.5 rounded-full bg-[#152234] hover:bg-[#1f324b] text-[11px] text-zinc-300 hover:text-white flex-shrink-0 border border-[#1F324B] transition-colors"
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
+
+          {/* Chat Input Bar */}
+          <form onSubmit={handleSendMessage} className="p-3 bg-[#0B131E] border-t border-[#1F324B] space-y-2">
+            {chatError && (
+              <div className="text-[11px] text-red-400 font-semibold px-1">
+                {chatError}
+              </div>
+            )}
+            {user?.role === 'ORGANISER' && (
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-1.5 text-xs text-amber-300 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={isAnnouncement}
+                    onChange={(e) => setIsAnnouncement(e.target.checked)}
+                    className="rounded bg-[#111C2B] border-[#1F324B] text-amber-500 focus:ring-0"
+                  />
+                  <span className="font-bold flex items-center gap-1">
+                    <Megaphone size={12} /> Post as Official Announcement
+                  </span>
+                </label>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Type your message in lobby..."
+                disabled={isSending}
+                className="flex-1 bg-[#111C2B] border border-[#1F324B] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#5BD19B] transition-colors disabled:opacity-50"
+              />
+
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                disabled={!inputText.trim() || isSending}
+                className="px-4 py-2.5 flex-shrink-0"
+              >
+                <Send size={15} />
+                <span className="hidden sm:inline">Send</span>
+              </Button>
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 };

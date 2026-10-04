@@ -417,6 +417,8 @@ export const TournamentDetailsView: React.FC<TournamentDetailsViewProps> = ({
           <LobbyChat
             tournamentId={tournament.id}
             user={user}
+            isRegistered={isRegistered || isAdminOrOrganiser}
+            onRegisterPrompt={() => onOpenRegistration(tournament)}
             onLoginPrompt={() => onOpenRegistration(tournament)}
           />
         )}

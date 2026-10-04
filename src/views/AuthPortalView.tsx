@@ -13,8 +13,7 @@ import {
   CheckCircle2,
   ArrowLeft,
   ExternalLink,
-  Flame,
-  Swords
+  Flame
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { tournamentService } from '../services/tournamentService';
@@ -235,16 +234,18 @@ export const AuthPortalView: React.FC<AuthPortalViewProps> = ({
           </div>
 
           <div className="flex items-center justify-center gap-2.5 pt-1">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5BD19B] to-[#3BA878] text-[#070D15] flex items-center justify-center shadow-[0_0_20px_rgba(91,209,155,0.4)]">
-              <Swords size={22} className="stroke-[2.5]" />
-            </div>
+            <img
+              src="/logo.png"
+              alt="GearUp Esports Logo"
+              className="w-11 h-11 object-contain rounded-xl shadow-[0_0_20px_rgba(91,209,155,0.35)]"
+            />
             <h1 className="text-3xl sm:text-4xl font-black font-display tracking-tight text-white uppercase">
               GEAR<span className="text-[#5BD19B]">UP</span>
             </h1>
           </div>
 
           <p className="text-xs sm:text-sm text-zinc-400 max-w-xs mx-auto">
-            BGMI • Free Fire • COD • Valorant
+            BGMI • Free Fire
           </p>
         </div>
 
