@@ -126,6 +126,20 @@ export const tournamentService = {
     return res.json();
   },
 
+  async deleteUser(userId: string, requesterId: string): Promise<{ success: boolean; message: string; deletedUserId?: string }> {
+    const res = await fetch(`/api/users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'x-user-id': requesterId
+      }
+    });
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.error || 'Failed to delete player account');
+    }
+    return result;
+  },
+
   async registerUser(data: {
     username: string;
     email: string;

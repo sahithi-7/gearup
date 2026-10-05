@@ -43,7 +43,9 @@ import {
   Image as ImageIcon,
   Upload,
   Link2,
-  Sparkles
+  Sparkles,
+  UserX,
+  Gamepad2
 } from 'lucide-react';
 
 export const GAME_BANNER_PRESETS: Record<TournamentGame, { label: string; url: string }[]> = {
@@ -100,9 +102,20 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
   navigate,
   user
 }) => {
-  const [activeTab, setActiveTab] = useState<'manage' | 'registrations' | 'payments' | 'create' | 'standings'>('manage');
+  const [activeTab, setActiveTab] = useState<'manage' | 'players' | 'registrations' | 'payments' | 'create' | 'standings'>('manage');
   const [manageStatusFilter, setManageStatusFilter] = useState<'ALL' | 'ACTIVE' | 'COMPLETED'>('ALL');
   const [isTogglingVisibility, setIsTogglingVisibility] = useState(false);
+
+  // Registered Players Dashboard State
+  const [allPlayers, setAllPlayers] = useState<User[]>([]);
+  const [isLoadingPlayers, setIsLoadingPlayers] = useState(false);
+  const [playerSearch, setPlayerSearch] = useState('');
+  const [playerRoleFilter, setPlayerRoleFilter] = useState<'ALL' | 'PLAYER' | 'ADMIN'>('ALL');
+  const [deletingPlayer, setDeletingPlayer] = useState<User | null>(null);
+  const [isDeletingPlayer, setIsDeletingPlayer] = useState(false);
+  const [playerActionMessage, setPlayerActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [copiedEmailId, setCopiedEmailId] = useState<string | null>(null);
+  const [copiedAllPlayerEmails, setCopiedAllPlayerEmails] = useState(false);
 
   // Registrations Dashboard State
   const [allRegistrations, setAllRegistrations] = useState<Registration[]>(() => tournamentService.getAllRegistrations());
@@ -278,6 +291,65 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
     }
   };
 
+  const fetchPlayersList = async () => {
+    if (!user?.id) return;
+    setIsLoadingPlayers(true);
+    try {
+      const usersList = await tournamentService.fetchUsers(user.id);
+      if (Array.isArray(usersList)) {
+        setAllPlayers(usersList);
+      }
+    } catch (err) {
+      console.error('Failed to load registered players:', err);
+    } finally {
+      setIsLoadingPlayers(false);
+    }
+  };
+
+  const handleConfirmDeletePlayer = async () => {
+    if (!deletingPlayer || !user?.id) return;
+    setIsDeletingPlayer(true);
+    setPlayerActionMessage(null);
+    try {
+      const res = await tournamentService.deleteUser(deletingPlayer.id, user.id);
+      if (res.success) {
+        soundFx.playSuccess();
+        setPlayerActionMessage({
+          type: 'success',
+          text: `Account "${deletingPlayer.username}" (${deletingPlayer.email}) was permanently deleted.`
+        });
+        setAllPlayers(prev => prev.filter(p => p.id !== deletingPlayer.id));
+        setDeletingPlayer(null);
+        // Refresh registrations & tournaments in background
+        tournamentService.fetchRegistrations().then(data => setAllRegistrations(data)).catch(() => {});
+      } else {
+        setPlayerActionMessage({
+          type: 'error',
+          text: res.message || 'Failed to delete player account'
+        });
+      }
+    } catch (err) {
+      setPlayerActionMessage({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Error deleting player account'
+      });
+    } finally {
+      setIsDeletingPlayer(false);
+    }
+  };
+
+  const handleCopyAllEmails = () => {
+    const emails = filteredPlayers
+      .map(p => p.email?.trim())
+      .filter(Boolean)
+      .join(', ');
+    if (!emails) return;
+    navigator.clipboard.writeText(emails);
+    setCopiedAllPlayerEmails(true);
+    soundFx.playSuccess();
+    setTimeout(() => setCopiedAllPlayerEmails(false), 2500);
+  };
+
   useEffect(() => {
     tournamentService.fetchRegistrations().then(data => {
       setAllRegistrations(data);
@@ -285,8 +357,24 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
       console.error('Failed to fetch registrations:', err);
     });
 
+    if (user?.id) {
+      tournamentService.fetchUsers(user.id).then(usersList => {
+        if (Array.isArray(usersList)) setAllPlayers(usersList);
+      }).catch(err => {
+        console.error('Failed to load registered players:', err);
+      });
+    }
+
     const unsub = tournamentService.subscribe(() => {
       setAllRegistrations(tournamentService.getAllRegistrations());
+    });
+
+    const unsubUsersUpdated = socketService.onUsersUpdated((usersList) => {
+      if (Array.isArray(usersList)) setAllPlayers(usersList);
+    });
+
+    const unsubUserDeleted = socketService.onUserDeleted(({ userId }) => {
+      setAllPlayers(prev => prev.filter(p => p.id !== userId));
     });
 
     tournamentService.getPaymentConfig().then(cfg => {
@@ -307,10 +395,36 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
 
     return () => {
       unsub();
+      unsubUsersUpdated();
+      unsubUserDeleted();
       unsubRequests();
       unsubPaymentConfig();
     };
-  }, []);
+  }, [user?.id]);
+
+  const filteredPlayers = useMemo(() => {
+    return allPlayers.filter(p => {
+      if (playerRoleFilter !== 'ALL') {
+        const isAdm = Boolean(p.is_admin || p.role === 'ADMIN');
+        if (playerRoleFilter === 'ADMIN' && !isAdm) return false;
+        if (playerRoleFilter === 'PLAYER' && isAdm) return false;
+      }
+      if (playerSearch.trim()) {
+        const q = playerSearch.toLowerCase();
+        const matchUser = p.username?.toLowerCase().includes(q);
+        const matchEmail = p.email?.toLowerCase().includes(q);
+        const matchIgn = p.in_game_name?.toLowerCase().includes(q);
+        const matchPhone = p.phone?.toLowerCase().includes(q);
+        const matchId = p.id?.toLowerCase().includes(q);
+        return Boolean(matchUser || matchEmail || matchIgn || matchPhone || matchId);
+      }
+      return true;
+    });
+  }, [allPlayers, playerRoleFilter, playerSearch]);
+
+  const totalWalletSum = useMemo(() => {
+    return allPlayers.reduce((acc, curr) => acc + (curr.wallet_balance || 0), 0);
+  }, [allPlayers]);
 
   const filteredRegistrations = useMemo(() => {
     return allRegistrations.filter((reg) => {
@@ -790,15 +904,26 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
           <span>Tournaments ({tournaments.length})</span>
         </button>
         <button
-          onClick={() => setActiveTab('registrations')}
+          onClick={() => setActiveTab('players')}
           className={`pb-3 text-xs sm:text-sm font-display font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 flex-shrink-0 ${
-            activeTab === 'registrations'
+            activeTab === 'players'
               ? 'text-[#5BD19B] border-[#5BD19B]'
               : 'text-zinc-400 border-transparent hover:text-white'
           }`}
         >
+          <UserCheck size={16} />
+          <span>Registered Players ({allPlayers.length})</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('registrations')}
+          className={`pb-3 text-xs sm:text-sm font-display font-bold uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 flex-shrink-0 ${
+            activeTab === 'registrations'
+              ? 'text-[#4D8EF7] border-[#4D8EF7]'
+              : 'text-zinc-400 border-transparent hover:text-white'
+          }`}
+        >
           <Users size={16} />
-          <span>Registered Users ({allRegistrations.length})</span>
+          <span>Match Entries ({allRegistrations.length})</span>
         </button>
         <button
           onClick={() => setActiveTab('payments')}
@@ -1156,7 +1281,416 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
         </div>
       )}
 
-      {/* Tab: Registered Users / Admin Roster Dashboard */}
+      {/* Tab: Registered Players Account Management & Purge */}
+      {activeTab === 'players' && (
+        <div className="space-y-6">
+          {/* Top KPI Stat Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="bg-[#111C2B] border border-[#1F324B] rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] sm:text-xs font-bold uppercase text-zinc-400 tracking-wider">
+                    Total Registered Accounts
+                  </span>
+                  <div className="text-2xl sm:text-3xl font-black font-display text-white mt-1">
+                    {allPlayers.length}
+                  </div>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-[#5BD19B]/10 border border-[#5BD19B]/30 flex items-center justify-center text-[#5BD19B]">
+                  <Users size={20} />
+                </div>
+              </div>
+              <div className="text-[11px] text-[#5BD19B] mt-2 font-medium flex items-center gap-1">
+                <span>All platform gamer accounts</span>
+              </div>
+            </div>
+
+            <div className="bg-[#111C2B] border border-[#1F324B] rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] sm:text-xs font-bold uppercase text-zinc-400 tracking-wider">
+                    Active Gamers (IGN Set)
+                  </span>
+                  <div className="text-2xl sm:text-3xl font-black font-display text-[#4D8EF7] mt-1">
+                    {allPlayers.filter(p => p.in_game_name && p.in_game_name.trim()).length}
+                  </div>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-[#4D8EF7]/10 border border-[#4D8EF7]/30 flex items-center justify-center text-[#4D8EF7]">
+                  <Gamepad2 size={20} />
+                </div>
+              </div>
+              <div className="text-[11px] text-zinc-400 mt-2 font-medium">
+                Gamers with game IDs configured
+              </div>
+            </div>
+
+            <div className="bg-[#111C2B] border border-[#1F324B] rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] sm:text-xs font-bold uppercase text-zinc-400 tracking-wider">
+                    Total Player Wallets
+                  </span>
+                  <div className="text-2xl sm:text-3xl font-black font-display text-amber-400 mt-1">
+                    ₹{totalWalletSum}
+                  </div>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <IndianRupee size={20} />
+                </div>
+              </div>
+              <div className="text-[11px] text-zinc-400 mt-2 font-medium">
+                Combined balance in player wallets
+              </div>
+            </div>
+
+            <div className="bg-[#111C2B] border border-[#1F324B] rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] sm:text-xs font-bold uppercase text-zinc-400 tracking-wider">
+                    Filtered Players
+                  </span>
+                  <div className="text-2xl sm:text-3xl font-black font-display text-purple-400 mt-1">
+                    {filteredPlayers.length}
+                  </div>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                  <Filter size={20} />
+                </div>
+              </div>
+              <div className="text-[11px] text-zinc-400 mt-2 font-medium">
+                Filtered view accounts
+              </div>
+            </div>
+          </div>
+
+          {/* Action Notification Banner */}
+          {playerActionMessage && (
+            <div
+              className={`border rounded-xl p-3.5 text-xs font-bold flex items-center justify-between animate-fadeIn ${
+                playerActionMessage.type === 'success'
+                  ? 'bg-[#5BD19B]/15 border-[#5BD19B]/40 text-[#5BD19B]'
+                  : 'bg-red-500/15 border-red-500/40 text-red-400'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                {playerActionMessage.type === 'success' ? <CheckCircle2 size={16} /> : <AlertTriangle size={16} />}
+                <span>{playerActionMessage.text}</span>
+              </div>
+              <button onClick={() => setPlayerActionMessage(null)} className="text-zinc-400 hover:text-white">
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
+          {/* Search, Filter & Quick Export Bar */}
+          <div className="bg-[#111C2B] border border-[#1F324B] rounded-2xl p-4 shadow-lg space-y-3">
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+              {/* Search Bar */}
+              <div className="relative flex-1">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <input
+                  type="text"
+                  value={playerSearch}
+                  onChange={(e) => setPlayerSearch(e.target.value)}
+                  placeholder="Search by GamerTag, IGN, Email, Phone, or ID..."
+                  className="w-full bg-[#0B131E] border border-[#1F324B] rounded-xl pl-10 pr-9 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#5BD19B]"
+                />
+                {playerSearch && (
+                  <button
+                    onClick={() => setPlayerSearch('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Role Filter & Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center bg-[#0B131E] border border-[#1F324B] rounded-xl p-1">
+                  {(['ALL', 'PLAYER', 'ADMIN'] as const).map((r) => (
+                    <button
+                      key={r}
+                      onClick={() => setPlayerRoleFilter(r)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        playerRoleFilter === r
+                          ? 'bg-[#5BD19B] text-[#0B131E]'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      {r === 'ALL' ? 'All Roles' : r === 'PLAYER' ? 'Players' : 'Admins'}
+                    </button>
+                  ))}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyAllEmails}
+                  className="text-xs"
+                  title="Copy emails of filtered players"
+                >
+                  {copiedAllPlayerEmails ? <Check size={14} className="text-[#5BD19B]" /> : <Copy size={14} />}
+                  <span>{copiedAllPlayerEmails ? 'Emails Copied!' : 'Copy Emails'}</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchPlayersList}
+                  disabled={isLoadingPlayers}
+                  className="text-xs"
+                  title="Refresh registered players list"
+                >
+                  <RefreshCw size={14} className={isLoadingPlayers ? 'animate-spin' : ''} />
+                  <span>Refresh</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Player Accounts List */}
+          {isLoadingPlayers && allPlayers.length === 0 ? (
+            <div className="bg-[#111C2B] border border-[#1F324B] rounded-2xl p-12 text-center">
+              <RefreshCw size={28} className="animate-spin text-[#5BD19B] mx-auto mb-3" />
+              <p className="text-sm font-semibold text-white">Loading registered accounts...</p>
+            </div>
+          ) : filteredPlayers.length === 0 ? (
+            <div className="bg-[#111C2B] border border-[#1F324B] rounded-2xl p-12 text-center">
+              <Users size={36} className="mx-auto text-zinc-600 mb-3" />
+              <p className="text-sm font-semibold text-zinc-300">No registered accounts found</p>
+              <p className="text-xs text-zinc-500 mt-1">
+                {playerSearch || playerRoleFilter !== 'ALL'
+                  ? 'Try clearing your search query or role filter.'
+                  : 'New player registrations on the website will automatically appear here.'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {/* Desktop Table */}
+              <div className="hidden md:block bg-[#111C2B] border border-[#1F324B] rounded-2xl overflow-hidden shadow-xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="bg-[#0B131E] text-zinc-400 font-bold uppercase tracking-wider border-b border-[#1F324B]">
+                        <th className="py-3.5 px-4">Player / GamerTag</th>
+                        <th className="py-3.5 px-4">Email</th>
+                        <th className="py-3.5 px-4">Phone</th>
+                        <th className="py-3.5 px-4">Role</th>
+                        <th className="py-3.5 px-4">Wallet Balance</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1F324B]">
+                      {filteredPlayers.map((p) => {
+                        const isAdm = Boolean(p.is_admin || p.role === 'ADMIN' || p.id === 'u-admin-1');
+                        const isSelf = p.id === user?.id;
+
+                        return (
+                          <tr key={p.id} className="hover:bg-[#152234]/50 transition-colors">
+                            <td className="py-3.5 px-4">
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm uppercase ${
+                                    isAdm
+                                      ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30'
+                                      : 'bg-[#5BD19B]/15 text-[#5BD19B] border border-[#5BD19B]/30'
+                                  }`}
+                                >
+                                  {p.username ? p.username.charAt(0) : 'U'}
+                                </div>
+                                <div>
+                                  <div className="font-bold text-white flex items-center gap-1.5">
+                                    <span>{p.username}</span>
+                                    {isSelf && (
+                                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#4D8EF7]/20 text-[#4D8EF7] font-semibold">
+                                        You
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-zinc-400 flex items-center gap-1 mt-0.5">
+                                    <Gamepad2 size={12} className="text-zinc-500" />
+                                    <span>IGN: <strong className="text-zinc-300">{p.in_game_name || p.username}</strong></span>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+
+                            <td className="py-3.5 px-4 text-zinc-300">
+                              <div className="flex items-center gap-1.5">
+                                <Mail size={13} className="text-zinc-500 flex-shrink-0" />
+                                <span className="font-mono">{p.email}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(p.email);
+                                    setCopiedEmailId(p.id);
+                                    setTimeout(() => setCopiedEmailId(null), 1800);
+                                  }}
+                                  className="text-zinc-500 hover:text-white p-0.5"
+                                  title="Copy email"
+                                >
+                                  {copiedEmailId === p.id ? (
+                                    <Check size={12} className="text-[#5BD19B]" />
+                                  ) : (
+                                    <Copy size={12} />
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+
+                            <td className="py-3.5 px-4 text-zinc-300">
+                              {p.phone ? (
+                                <div className="flex items-center gap-1.5">
+                                  <Phone size={13} className="text-zinc-500" />
+                                  <span className="font-mono">{p.phone}</span>
+                                </div>
+                              ) : (
+                                <span className="text-zinc-500 italic">Not provided</span>
+                              )}
+                            </td>
+
+                            <td className="py-3.5 px-4">
+                              {isAdm ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-500/15 text-purple-400 border border-purple-500/30">
+                                  <Shield size={11} /> ADMIN
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#5BD19B]/15 text-[#5BD19B] border border-[#5BD19B]/30">
+                                  PLAYER
+                                </span>
+                              )}
+                            </td>
+
+                            <td className="py-3.5 px-4">
+                              <div className="font-bold text-white flex items-center gap-1">
+                                <span className="text-zinc-400">₹</span>
+                                <span>{p.wallet_balance || 0}</span>
+                              </div>
+                            </td>
+
+                            <td className="py-3.5 px-4 text-right">
+                              {isAdm ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-500 text-[11px] font-semibold cursor-not-allowed">
+                                  <Lock size={12} /> Protected
+                                </span>
+                              ) : isSelf ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-500 text-[11px] font-semibold cursor-not-allowed">
+                                  Active Session
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => setDeletingPlayer(p)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-500/50 font-bold transition-all"
+                                  title={`Delete ${p.username}'s account`}
+                                >
+                                  <Trash2 size={13} />
+                                  <span>Delete</span>
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden space-y-3">
+                {filteredPlayers.map((p) => {
+                  const isAdm = Boolean(p.is_admin || p.role === 'ADMIN' || p.id === 'u-admin-1');
+                  const isSelf = p.id === user?.id;
+
+                  return (
+                    <div
+                      key={p.id}
+                      className="bg-[#111C2B] border border-[#1F324B] rounded-2xl p-4 shadow-lg space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm uppercase ${
+                              isAdm
+                                ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30'
+                                : 'bg-[#5BD19B]/15 text-[#5BD19B] border border-[#5BD19B]/30'
+                            }`}
+                          >
+                            {p.username ? p.username.charAt(0) : 'U'}
+                          </div>
+                          <div>
+                            <div className="font-bold text-white text-sm flex items-center gap-1.5">
+                              <span>{p.username}</span>
+                              {isSelf && (
+                                <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#4D8EF7]/20 text-[#4D8EF7] font-semibold">
+                                  You
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-zinc-400">
+                              IGN: <strong className="text-zinc-200">{p.in_game_name || p.username}</strong>
+                            </div>
+                          </div>
+                        </div>
+
+                        {isAdm ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-500/15 text-purple-400 border border-purple-500/30">
+                            <Shield size={10} /> ADMIN
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#5BD19B]/15 text-[#5BD19B] border border-[#5BD19B]/30">
+                            PLAYER
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-[#0B131E] rounded-xl p-2.5 border border-[#1F324B]">
+                        <div>
+                          <span className="text-[10px] text-zinc-500 font-bold uppercase block">Email</span>
+                          <span className="text-zinc-300 font-mono text-[11px] truncate block">{p.email}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-zinc-500 font-bold uppercase block">Wallet</span>
+                          <span className="text-white font-bold">₹{p.wallet_balance || 0}</span>
+                        </div>
+                        {p.phone && (
+                          <div className="col-span-2">
+                            <span className="text-[10px] text-zinc-500 font-bold uppercase block">Phone</span>
+                            <span className="text-zinc-300 font-mono text-[11px]">{p.phone}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-end pt-1 border-t border-[#1F324B]">
+                        {isAdm ? (
+                          <span className="text-[11px] text-zinc-500 flex items-center gap-1">
+                            <Lock size={12} /> Protected Admin
+                          </span>
+                        ) : isSelf ? (
+                          <span className="text-[11px] text-zinc-500">Active Account</span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setDeletingPlayer(p)}
+                            className="w-full py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
+                          >
+                            <Trash2 size={14} />
+                            <span>Delete Player Account</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab: Match Entries / Tournament Registrations */}
       {activeTab === 'registrations' && (
         <div className="space-y-6">
           {/* Top KPI Stat Cards */}
@@ -3443,6 +3977,109 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Delete Player Account Confirmation Modal */}
+      {deletingPlayer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[#0F1A28] border border-red-500/40 rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl relative space-y-5 animate-scaleUp">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400">
+                  <UserX size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black font-display uppercase text-white tracking-tight">
+                    Delete Player Account
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Purge unwanted account from database
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDeletingPlayer(null)}
+                disabled={isDeletingPlayer}
+                className="w-8 h-8 rounded-xl bg-[#152234] text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Account Info Box */}
+            <div className="bg-[#080D14] border border-[#1F324B] rounded-2xl p-4 space-y-2 text-xs">
+              <div className="flex justify-between items-center pb-2 border-b border-[#1F324B]">
+                <span className="text-zinc-400">GamerTag / Username:</span>
+                <strong className="text-white text-sm">{deletingPlayer.username}</strong>
+              </div>
+              <div className="flex justify-between items-center pb-2 border-b border-[#1F324B]">
+                <span className="text-zinc-400">Email Address:</span>
+                <span className="font-mono text-zinc-300">{deletingPlayer.email}</span>
+              </div>
+              {deletingPlayer.in_game_name && (
+                <div className="flex justify-between items-center pb-2 border-b border-[#1F324B]">
+                  <span className="text-zinc-400">In-Game Name (IGN):</span>
+                  <span className="text-zinc-200">{deletingPlayer.in_game_name}</span>
+                </div>
+              )}
+              {deletingPlayer.phone && (
+                <div className="flex justify-between items-center pb-2 border-b border-[#1F324B]">
+                  <span className="text-zinc-400">Phone:</span>
+                  <span className="font-mono text-zinc-300">{deletingPlayer.phone}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-400">Wallet Balance:</span>
+                <span className="font-bold text-amber-400">₹{deletingPlayer.wallet_balance || 0}</span>
+              </div>
+            </div>
+
+            {/* Warning Message */}
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 text-[11px] text-red-300 space-y-1">
+              <div className="font-bold flex items-center gap-1.5 text-red-400">
+                <AlertTriangle size={13} />
+                <span>Permanent Deletion Warning</span>
+              </div>
+              <p>
+                Deleting this account will permanently remove the player profile, purge their wallet, and free up their slots in any registered tournaments. This cannot be undone.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="md"
+                fullWidth
+                disabled={isDeletingPlayer}
+                onClick={() => setDeletingPlayer(null)}
+              >
+                Cancel
+              </Button>
+              <button
+                type="button"
+                disabled={isDeletingPlayer}
+                onClick={handleConfirmDeletePlayer}
+                className="w-full py-3 px-4 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black font-display text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all"
+              >
+                {isDeletingPlayer ? (
+                  <>
+                    <RefreshCw size={14} className="animate-spin" />
+                    <span>Deleting Account...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={14} />
+                    <span>Yes, Delete Account</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

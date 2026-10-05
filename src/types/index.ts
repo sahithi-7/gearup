@@ -18,6 +18,7 @@ export interface User {
   in_game_name?: string;
   phone?: string;
   wallet_balance: number;
+  created_at?: string;
 }
 
 export interface LoginCredentials {

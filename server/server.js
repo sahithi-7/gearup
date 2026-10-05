@@ -936,7 +936,7 @@ app.get('/api/users', (req, res) => {
     return res.status(401).json({ error: 'A valid user is required to view user details' });
   }
 
-  const canViewAllUsers = requester.role === 'ORGANISER' || requester.is_admin;
+  const canViewAllUsers = requester.role === 'ORGANISER' || requester.role === 'ADMIN' || requester.is_admin;
   const visibleUsers = canViewAllUsers ? db.users : [requester];
   const users = visibleUsers.map(user => ({
     ...user,
@@ -971,7 +971,8 @@ app.post('/api/users', async (req, res) => {
     is_admin: role === 'ADMIN',
     in_game_name: typeof in_game_name === 'string' && in_game_name.trim() ? in_game_name.trim() : normalizedUsername,
     phone: typeof phone === 'string' ? phone.trim() : '',
-    wallet_balance: 0
+    wallet_balance: 0,
+    created_at: new Date().toISOString()
   };
 
   db.users.unshift(user);
@@ -1157,6 +1158,95 @@ app.put('/api/users/:id/role', (req, res) => {
   user.is_admin = role === 'ADMIN';
   saveDb(db);
   res.json(user);
+});
+
+app.delete('/api/users/:id', (req, res) => {
+  const requesterId = req.get('x-user-id') || req.query.requesterId;
+  const targetId = req.params.id;
+
+  if (!requesterId) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  const requester = db.users.find(u => u.id === requesterId);
+  if (!requester || (!requester.is_admin && requester.role !== 'ORGANISER' && requester.role !== 'ADMIN')) {
+    return res.status(403).json({ error: 'Only administrators or organisers can delete player accounts' });
+  }
+
+  const userIndex = db.users.findIndex(u => u.id === targetId);
+  if (userIndex === -1) {
+    return res.status(404).json({ error: 'User account not found' });
+  }
+
+  const targetUser = db.users[userIndex];
+
+  // Protect administrator accounts
+  if (targetUser.is_admin || targetUser.role === 'ADMIN' || targetUser.id === 'u-admin-1') {
+    return res.status(403).json({ error: 'Protected administrator accounts cannot be deleted' });
+  }
+
+  // Prevent deleting oneself
+  if (targetUser.id === requester.id) {
+    return res.status(400).json({ error: 'You cannot delete your own logged-in administrator account' });
+  }
+
+  const deletedUsername = targetUser.username;
+  const deletedEmail = targetUser.email;
+
+  // 1. Remove user from db.users
+  db.users.splice(userIndex, 1);
+
+  // 2. Clean up wallet
+  if (db.wallets && db.wallets[targetId]) {
+    delete db.wallets[targetId];
+  }
+
+  // 3. Clean up tournament registrations and adjust tournament slots
+  let affectedTournaments = false;
+  if (Array.isArray(db.registrations)) {
+    const userRegs = db.registrations.filter(r => r.user_id === targetId);
+    userRegs.forEach(reg => {
+      const tournament = db.tournaments.find(t => t.id === reg.tournament_id);
+      if (tournament && tournament.slots_filled > 0) {
+        tournament.slots_filled = Math.max(0, tournament.slots_filled - 1);
+        affectedTournaments = true;
+      }
+    });
+    db.registrations = db.registrations.filter(r => r.user_id !== targetId);
+  }
+
+  // 4. Clean up notifications
+  if (Array.isArray(db.notifications)) {
+    db.notifications = db.notifications.filter(n => n.user_id !== targetId);
+  }
+
+  // 5. Clean up payment requests
+  if (Array.isArray(db.payment_requests)) {
+    db.payment_requests = db.payment_requests.filter(p => p.user_id !== targetId);
+  }
+
+  // 6. Save DB
+  saveDb(db);
+
+  // 7. Emit real-time socket events
+  const safeUsers = db.users.map(u => ({
+    ...u,
+    wallet_balance: db.wallets[u.id]?.balance ?? u.wallet_balance ?? 0
+  }));
+  io.emit('user:deleted', { userId: targetId, username: deletedUsername });
+  io.emit('users:updated', safeUsers);
+  io.emit('registrations:updated', db.registrations);
+  if (affectedTournaments) {
+    io.emit('tournaments:updated', db.tournaments);
+  }
+
+  console.log(`[Admin] Deleted player account: "${deletedUsername}" (${deletedEmail}, id: ${targetId}) by admin "${requester.username}"`);
+
+  res.json({
+    success: true,
+    message: `Account "${deletedUsername}" (${deletedEmail}) has been permanently deleted`,
+    deletedUserId: targetId
+  });
 });
 
 // 10. Tournament Lobby Chat Messages

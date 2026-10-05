@@ -121,12 +121,21 @@ export default function App() {
 
     const unsubBroadcast = socketService.onRoomBroadcast(handleIncomingRoomAlert);
     const unsubSent = socketService.onRoomCredentialsSent(handleIncomingRoomAlert);
+    const unsubUserDeleted = socketService.onUserDeleted(({ userId, username }) => {
+      if (user && user.id === userId) {
+        setUser(null);
+        localStorage.removeItem(USER_SESSION_KEY);
+        soundFx.playCancel();
+        alert(`Your account "${username || 'Player'}" was deleted by an administrator.`);
+      }
+    });
 
     return () => {
       unsubService();
       unsubUsers();
       unsubBroadcast();
       unsubSent();
+      unsubUserDeleted();
     };
   }, [user]);
 

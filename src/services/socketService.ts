@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import type { Tournament, BroadcastAlert, ChatMessage, MatchStanding, Registration, PaymentRequest, PaymentConfig } from '../types';
+import type { Tournament, BroadcastAlert, ChatMessage, MatchStanding, Registration, PaymentRequest, PaymentConfig, User } from '../types';
 
 type EventCallback<T> = (data: T) => void;
 
@@ -18,6 +18,8 @@ class SocketService {
   private roomCredentialsSentListeners: Set<EventCallback<BroadcastAlert>> = new Set();
   private chatMessageListeners: Set<EventCallback<ChatMessage>> = new Set();
   private standingsUpdatedListeners: Set<EventCallback<{ tournament_id: string; standings: MatchStanding[] }>> = new Set();
+  private userDeletedListeners: Set<EventCallback<{ userId: string; username?: string }>> = new Set();
+  private usersUpdatedListeners: Set<EventCallback<User[]>> = new Set();
 
   private isConnectedState = false;
 
@@ -91,6 +93,14 @@ class SocketService {
 
     this.socket.on('standings:updated', (payload: { tournament_id: string; standings: MatchStanding[] }) => {
       this.standingsUpdatedListeners.forEach(cb => cb(payload));
+    });
+
+    this.socket.on('user:deleted', (payload: { userId: string; username?: string }) => {
+      this.userDeletedListeners.forEach(cb => cb(payload));
+    });
+
+    this.socket.on('users:updated', (users: User[]) => {
+      this.usersUpdatedListeners.forEach(cb => cb(users));
     });
 
     return this.socket;
@@ -190,6 +200,16 @@ class SocketService {
   onWalletUpdated(cb: EventCallback<{ userId: string; balance: number }>): () => void {
     this.walletUpdatedListeners.add(cb);
     return () => this.walletUpdatedListeners.delete(cb);
+  }
+
+  onUserDeleted(cb: EventCallback<{ userId: string; username?: string }>): () => void {
+    this.userDeletedListeners.add(cb);
+    return () => this.userDeletedListeners.delete(cb);
+  }
+
+  onUsersUpdated(cb: EventCallback<User[]>): () => void {
+    this.usersUpdatedListeners.add(cb);
+    return () => this.usersUpdatedListeners.delete(cb);
   }
 }
 
