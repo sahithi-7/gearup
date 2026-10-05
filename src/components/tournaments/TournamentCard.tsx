@@ -2,7 +2,7 @@ import React from 'react';
 import type { Tournament } from '../../types';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
-import { Trophy, Users, Calendar, MapPin, KeyRound, CheckCircle2, Flag } from 'lucide-react';
+import { Trophy, Users, Calendar, MapPin, KeyRound, CheckCircle2, Flag, Video } from 'lucide-react';
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -51,6 +51,19 @@ export const TournamentCard: React.FC<TournamentCardProps> = ({
             <Badge variant="neutral" size="sm">
               {tournament.format}
             </Badge>
+            {tournament.youtube_url && (
+              <a
+                href={tournament.youtube_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md backdrop-blur-sm transition-transform hover:scale-105"
+                title="Watch Live Stream on YouTube"
+              >
+                <Video size={10} className="animate-pulse" />
+                <span>Stream</span>
+              </a>
+            )}
           </div>
 
           {tournament.status === 'COMPLETED' ? (
@@ -152,6 +165,26 @@ export const TournamentCard: React.FC<TournamentCardProps> = ({
               </>
             )}
           </div>
+
+          {/* YouTube Stream Link Notice */}
+          {tournament.youtube_url && (
+            <div className="mb-3.5 bg-red-500/10 border border-red-500/25 rounded-xl px-3 py-2 flex items-center justify-between text-xs">
+              <span className="text-[11px] font-bold text-red-300 flex items-center gap-1.5">
+                <Video size={13} className="text-red-400 animate-pulse" />
+                <span>Live Stream Available</span>
+              </span>
+              <a
+                href={tournament.youtube_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[10px] font-bold uppercase tracking-wider text-white bg-red-600 hover:bg-red-500 px-2 py-0.5 rounded shadow-sm transition-colors flex items-center gap-1"
+              >
+                <span>Watch</span>
+                <span className="text-[9px]">↗</span>
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Action Button */}

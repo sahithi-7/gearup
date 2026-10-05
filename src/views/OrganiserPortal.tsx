@@ -45,7 +45,8 @@ import {
   Link2,
   Sparkles,
   UserX,
-  Gamepad2
+  Gamepad2,
+  Video
 } from 'lucide-react';
 
 export const GAME_BANNER_PRESETS: Record<TournamentGame, { label: string; url: string }[]> = {
@@ -588,6 +589,7 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
   const [newSlotsTotal, setNewSlotsTotal] = useState(100);
   const [newMap, setNewMap] = useState('Erangel');
   const [newRules, setNewRules] = useState('1. Mobile only, no emulators.\n2. Room details unlock 15 mins prior.\n3. Top 3 claim prizes.');
+  const [newYoutubeUrl, setNewYoutubeUrl] = useState('');
   const [createSuccess, setCreateSuccess] = useState(false);
 
   // Edit existing tournament prizes modal state
@@ -620,6 +622,48 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
   const [isSavingBanner, setIsSavingBanner] = useState(false);
   const [editBannerSuccess, setEditBannerSuccess] = useState(false);
   const [editBannerError, setEditBannerError] = useState<string | null>(null);
+
+  // Edit tournament YouTube stream modal state
+  const [selectedTournamentForYoutube, setSelectedTournamentForYoutube] = useState<Tournament | null>(null);
+  const [editYoutubeUrl, setEditYoutubeUrl] = useState('');
+  const [isSavingYoutube, setIsSavingYoutube] = useState(false);
+  const [youtubeSaveSuccess, setYoutubeSaveSuccess] = useState(false);
+  const [youtubeError, setYoutubeError] = useState<string | null>(null);
+
+  const openEditYoutubeModal = (t: Tournament) => {
+    setSelectedTournamentForYoutube(t);
+    setEditYoutubeUrl(t.youtube_url || '');
+    setYoutubeError(null);
+    setYoutubeSaveSuccess(false);
+  };
+
+  const handleSaveYoutubeUrl = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTournamentForYoutube) return;
+    setIsSavingYoutube(true);
+    setYoutubeError(null);
+    try {
+      const cleanUrl = editYoutubeUrl.trim();
+      const updated = await tournamentService.updateYoutubeUrl(
+        selectedTournamentForYoutube.id,
+        cleanUrl ? cleanUrl : null
+      );
+      if (updated) {
+        soundFx.playSuccess();
+        setYoutubeSaveSuccess(true);
+        setTimeout(() => {
+          setYoutubeSaveSuccess(false);
+          setSelectedTournamentForYoutube(null);
+        }, 1200);
+      } else {
+        setYoutubeError('Failed to update YouTube live stream link');
+      }
+    } catch (err) {
+      setYoutubeError(err instanceof Error ? err.message : 'Network error updating YouTube link');
+    } finally {
+      setIsSavingYoutube(false);
+    }
+  };
 
   const handleGameChange = (game: TournamentGame) => {
     setNewGame(game);
@@ -834,6 +878,7 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
       slots_total: Number(newSlotsTotal),
       status: 'REGISTRATION_OPEN',
       banner_url: chosenBanner,
+      youtube_url: newYoutubeUrl.trim() || undefined,
       map: newMap,
       rules: newRules,
       room_credential: {
@@ -852,6 +897,7 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
     setTimeout(() => {
       setCreateSuccess(false);
       setNewTitle('');
+      setNewYoutubeUrl('');
       setNewBannerUrl(GAME_BANNER_PRESETS['BGMI'][0].url);
       setActiveTab('manage');
     }, 1500);
@@ -1143,6 +1189,20 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                       <span className="flex items-center gap-1"><Calendar size={12} /> {tournament.date} • {tournament.time}</span>
                       <span className="flex items-center gap-1"><Users size={12} /> {tournament.slots_filled}/{tournament.slots_total} slots</span>
                       <span className="flex items-center gap-1"><Trophy size={12} className="text-[#5BD19B]" /> ₹{tournament.prize_pool}</span>
+                      {tournament.youtube_url && (
+                        <a
+                          href={tournament.youtube_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 text-[11px] font-bold text-red-400 hover:text-red-300 bg-red-500/10 border border-red-500/30 px-2 py-0.5 rounded-md transition-colors"
+                          title="Watch live stream or open YouTube channel"
+                        >
+                          <Video size={11} className="text-red-400 animate-pulse" />
+                          <span>YT Live</span>
+                          <ExternalLink size={10} />
+                        </a>
+                      )}
                     </div>
 
                     {isRoomReleased && tournament.room_credential && (
@@ -1193,7 +1253,7 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
                       <Button
                         variant="outline"
                         size="sm"
@@ -1239,6 +1299,22 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                       >
                         <ImageIcon size={13} />
                         <span>Edit Image</span>
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        fullWidth
+                        onClick={() => openEditYoutubeModal(tournament)}
+                        className={`text-xs py-2 border-[#1F324B] ${
+                          tournament.youtube_url
+                            ? 'text-red-400 hover:text-red-300 border-red-500/30 hover:border-red-500/50 bg-red-500/10'
+                            : 'text-zinc-300 hover:text-white hover:border-red-500/40'
+                        }`}
+                        title={tournament.youtube_url ? `Stream URL: ${tournament.youtube_url}` : 'Add YouTube Stream / Channel Link'}
+                      >
+                        <Video size={13} className={tournament.youtube_url ? 'text-red-400' : 'text-zinc-400'} />
+                        <span>{tournament.youtube_url ? 'YT Stream' : 'Add Stream'}</span>
                       </Button>
 
                       <Button
@@ -3184,6 +3260,31 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                 )}
               </div>
 
+              {/* YouTube Live Stream / Channel Link */}
+              <div className="bg-[#0B131E] border border-[#1F324B] rounded-xl p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase text-white flex items-center gap-1.5 font-display">
+                    <Video size={14} className="text-red-500" /> YouTube Live Stream / Channel Link <span className="text-[10px] text-zinc-400 font-normal lowercase">(optional)</span>
+                  </label>
+                  <span className="text-[10px] uppercase font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
+                    YouTuber / Creator Stream
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-400">
+                  If this tournament is conducted or live-streamed by a YouTuber, paste their YouTube channel URL or live stream link here. Players can click to watch the tournament live!
+                </p>
+                <div className="relative">
+                  <Video size={14} className="absolute left-3.5 top-3 text-red-500" />
+                  <input
+                    type="url"
+                    value={newYoutubeUrl}
+                    onChange={(e) => setNewYoutubeUrl(e.target.value)}
+                    placeholder="https://youtube.com/@channel or https://youtu.be/live_id"
+                    className="w-full bg-[#111C2B] border border-[#1F324B] rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-red-500 placeholder-zinc-500"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold uppercase text-zinc-300 mb-1">Rules & Notes</label>
                 <textarea
@@ -4080,6 +4181,149 @@ export const OrganiserPortal: React.FC<OrganiserPortalProps> = ({
                 )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* YouTube Live Stream Link Modal */}
+      {selectedTournamentForYoutube && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[#0F1A28] border border-red-500/30 rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl relative space-y-5 animate-scaleUp">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-500">
+                  <Video size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black font-display uppercase text-white tracking-tight">
+                    YouTube Stream / Channel
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Connect streamer or channel broadcast
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedTournamentForYoutube(null)}
+                disabled={isSavingYoutube}
+                className="w-8 h-8 rounded-xl bg-[#152234] text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Tournament Details Banner */}
+            <div className="bg-[#080D14] border border-[#1F324B] rounded-2xl p-3 flex items-center gap-3">
+              <img
+                src={selectedTournamentForYoutube.banner_url || GAME_BANNER_PRESETS[selectedTournamentForYoutube.game]?.[0]?.url}
+                alt=""
+                className="w-12 h-12 rounded-xl object-cover border border-[#1F324B]"
+              />
+              <div className="min-w-0 flex-1">
+                <h4 className="text-sm font-bold text-white truncate">{selectedTournamentForYoutube.title}</h4>
+                <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+                  <span>{selectedTournamentForYoutube.game}</span>
+                  <span>•</span>
+                  <span>{selectedTournamentForYoutube.date}</span>
+                </div>
+              </div>
+            </div>
+
+            {youtubeSaveSuccess ? (
+              <div className="py-6 text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-[#5BD19B]/20 text-[#5BD19B] mx-auto flex items-center justify-center">
+                  <CheckCircle2 size={24} />
+                </div>
+                <h4 className="text-white font-bold font-display text-sm uppercase">YouTube Stream Updated!</h4>
+                <p className="text-xs text-zinc-400">Live stream link was saved and broadcasted to players.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSaveYoutubeUrl} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase text-zinc-300">
+                    YouTube Live Stream or Channel URL
+                  </label>
+                  <p className="text-[11px] text-zinc-400">
+                    Provide the YouTuber's live stream URL (e.g. <code>https://youtube.com/live/xxx</code>) or channel link (e.g. <code>https://youtube.com/@channelName</code>). Leave blank to remove.
+                  </p>
+                  <div className="relative">
+                    <Video size={16} className="absolute left-3.5 top-3.5 text-red-500" />
+                    <input
+                      type="url"
+                      value={editYoutubeUrl}
+                      onChange={(e) => setEditYoutubeUrl(e.target.value)}
+                      placeholder="https://youtube.com/@channel or https://youtu.be/live_id"
+                      className="w-full bg-[#080D14] border border-[#1F324B] rounded-xl pl-10 pr-3.5 py-3 text-sm text-white focus:outline-none focus:border-red-500 placeholder-zinc-600"
+                    />
+                  </div>
+                </div>
+
+                {editYoutubeUrl && (
+                  <div className="flex items-center justify-between bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2 text-xs">
+                    <span className="text-red-300 font-medium truncate max-w-[240px]">{editYoutubeUrl}</span>
+                    <a
+                      href={editYoutubeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-red-400 hover:text-white flex items-center gap-1 font-bold text-[11px] uppercase tracking-wide ml-2"
+                    >
+                      <span>Test Link</span>
+                      <ExternalLink size={12} />
+                    </a>
+                  </div>
+                )}
+
+                {youtubeError && (
+                  <p className="text-xs text-red-400 flex items-center gap-1.5">
+                    <AlertTriangle size={13} /> {youtubeError}
+                  </p>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  {selectedTournamentForYoutube.youtube_url && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="md"
+                      disabled={isSavingYoutube}
+                      onClick={() => setEditYoutubeUrl('')}
+                      className="text-xs text-zinc-400 hover:text-red-400 border-[#1F324B]"
+                    >
+                      Clear
+                    </Button>
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="md"
+                    fullWidth
+                    disabled={isSavingYoutube}
+                    onClick={() => setSelectedTournamentForYoutube(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <button
+                    type="submit"
+                    disabled={isSavingYoutube}
+                    className="w-full py-3 px-4 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black font-display text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(239,68,68,0.3)] transition-all"
+                  >
+                    {isSavingYoutube ? (
+                      <>
+                        <RefreshCw size={14} className="animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Video size={14} />
+                        <span>Save Stream Link</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

@@ -400,6 +400,42 @@ export const tournamentService = {
     return null;
   },
 
+  async updateYoutubeUrl(tournamentId: string, youtubeUrl: string | null): Promise<Tournament | null> {
+    try {
+      const res = await fetch(`/api/tournaments/${tournamentId}/youtube`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ youtube_url: youtubeUrl })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const updated: Tournament = data.tournament || data;
+        const idx = cachedTournaments.findIndex(t => t.id === tournamentId);
+        if (idx !== -1) {
+          cachedTournaments[idx] = updated;
+          localStorage.setItem(TOURNAMENTS_STORAGE_KEY, JSON.stringify(cachedTournaments));
+          notifyListeners();
+        }
+        return updated;
+      }
+    } catch {
+      // Offline fallback
+    }
+
+    const idx = cachedTournaments.findIndex(t => t.id === tournamentId);
+    if (idx !== -1) {
+      if (youtubeUrl) {
+        cachedTournaments[idx].youtube_url = youtubeUrl;
+      } else {
+        delete cachedTournaments[idx].youtube_url;
+      }
+      localStorage.setItem(TOURNAMENTS_STORAGE_KEY, JSON.stringify(cachedTournaments));
+      notifyListeners();
+      return cachedTournaments[idx];
+    }
+    return null;
+  },
+
   async registerForTournament(
     tournamentId: string,
     playerData: {

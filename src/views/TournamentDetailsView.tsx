@@ -21,7 +21,9 @@ import {
   Lock,
   Send,
   X,
-  Flag
+  Flag,
+  Video,
+  ExternalLink
 } from 'lucide-react';
 
 interface TournamentDetailsViewProps {
@@ -100,6 +102,16 @@ export const TournamentDetailsView: React.FC<TournamentDetailsViewProps> = ({
             <span className="text-xs font-black uppercase bg-[#5BD19B] text-[#0B131E] px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 animate-pulse">
               <KeyRound size={13} /> Room Credentials Live
             </span>
+          )}
+          {tournament.youtube_url && (
+            <a
+              href={tournament.youtube_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-black uppercase bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded-full shadow-lg flex items-center gap-1.5 transition-transform hover:scale-105"
+            >
+              <Video size={13} className="animate-pulse" /> Live Stream
+            </a>
           )}
         </div>
       </div>
@@ -233,6 +245,43 @@ export const TournamentDetailsView: React.FC<TournamentDetailsViewProps> = ({
             >
               <Trophy size={14} /> View Final Standings
             </Button>
+          </div>
+        )}
+
+        {/* YouTube Creator Live Broadcast Banner */}
+        {tournament.youtube_url && (
+          <div className="bg-gradient-to-r from-red-950/40 via-[#111C2B] to-red-950/40 rounded-2xl border border-red-500/40 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_0_30px_rgba(239,68,68,0.15)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="flex items-center gap-3.5 relative z-10">
+              <div className="w-12 h-12 rounded-2xl bg-red-600/20 border border-red-500/40 text-red-500 flex items-center justify-center flex-shrink-0 shadow-inner">
+                <Video size={24} className="animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                    LIVE BROADCAST
+                  </span>
+                  <span className="text-xs font-bold text-red-400">Creator Stream</span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black font-display uppercase text-white">
+                  Watch Official Tournament Stream on YouTube
+                </h3>
+                <p className="text-xs text-zinc-400">
+                  This tournament is streamed live. Follow all matches, caster commentary, and clutch moments live on YouTube!
+                </p>
+              </div>
+            </div>
+            <a
+              href={tournament.youtube_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="self-start sm:self-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-black font-display uppercase tracking-wider flex items-center gap-2 shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all hover:scale-105 relative z-10 flex-shrink-0"
+            >
+              <Video size={16} />
+              <span>Watch on YouTube</span>
+              <ExternalLink size={14} />
+            </a>
           </div>
         )}
 

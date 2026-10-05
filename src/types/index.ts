@@ -77,6 +77,7 @@ export interface Tournament {
   prize_breakdown: PrizeBreakdown[];
   standings?: MatchStanding[];
   is_hidden?: boolean;
+  youtube_url?: string;
 }
 
 export interface TeamMember {

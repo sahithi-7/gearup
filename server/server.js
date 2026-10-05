@@ -737,6 +737,29 @@ app.put('/api/tournaments/:id/banner', (req, res) => {
   res.json({ success: true, tournament });
 });
 
+// 7d. Update YouTube Channel / Live Stream URL
+app.put('/api/tournaments/:id/youtube', (req, res) => {
+  const { youtube_url } = req.body;
+  const index = db.tournaments.findIndex(t => t.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Tournament not found' });
+  }
+
+  const cleanUrl = typeof youtube_url === 'string' && youtube_url.trim() ? youtube_url.trim() : null;
+  const tournament = db.tournaments[index];
+  if (cleanUrl) {
+    tournament.youtube_url = cleanUrl;
+  } else {
+    delete tournament.youtube_url;
+  }
+  db.tournaments[index] = tournament;
+  saveDb(db);
+
+  io.emit('tournament:updated', tournament);
+  console.log(`[Admin] 📺 Updated YouTube channel/stream URL for: ${tournament.title} -> ${cleanUrl || 'Removed'}`);
+  res.json({ success: true, tournament });
+});
+
 // 7c. Direct Image Upload for Tournament Banners
 app.post('/api/upload', (req, res) => {
   const { image } = req.body;

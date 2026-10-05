@@ -164,7 +164,7 @@
       "entry_fee": 0,
       "prize_pool": 10000,
       "slots_total": 100,
-      "slots_filled": 2,
+      "slots_filled": 1,
       "status": "COMPLETED",
       "banner_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200",
       "map": "Erangel",
@@ -249,34 +249,6 @@
         }
       ],
       "registered_at": "2026-09-12T13:21:50.329Z",
-      "status": "CONFIRMED"
-    },
-    {
-      "id": "reg-1789218852705",
-      "tournament_id": "t-1",
-      "tournament_title": "BGMI SUNDAY CLASH SERIES 4",
-      "game": "BGMI",
-      "user_id": "test-squad-leader-1789218852699",
-      "email": "mortal@example.com",
-      "player_ign": "SoulMortaL",
-      "player_uid": "519284710",
-      "phone": "9876543210",
-      "team_name": "Team SouL",
-      "teammates": [
-        {
-          "name": "SoulViper",
-          "uid": "519284711"
-        },
-        {
-          "name": "SoulRegaltos",
-          "uid": "519284712"
-        },
-        {
-          "name": "SoulAman",
-          "uid": "519284713"
-        }
-      ],
-      "registered_at": "2026-09-12T13:14:12.705Z",
       "status": "CONFIRMED"
     },
     {
