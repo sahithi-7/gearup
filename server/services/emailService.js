@@ -49,21 +49,13 @@ async function getTransporter(forceRefresh = false) {
       const transportConfig = isGmail
         ? {
             service: 'gmail',
-            auth: { user, pass },
-            pool: true,
-            maxConnections: 3,
-            maxMessages: 100,
-            rateLimit: 5,
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 15000
+            auth: { user, pass }
           }
         : {
             host,
             port,
             secure: port === 465,
             auth: { user, pass },
-            pool: true,
             connectionTimeout: 10000,
             greetingTimeout: 10000,
             socketTimeout: 15000
@@ -280,12 +272,50 @@ function buildEmailTemplate({ title, badge, contentHtml }) {
 async function deliverMail({ from, to, subject, text, html }) {
   reloadEnv();
 
-  // 1. Resend HTTPS API (Port 443 - 100% bypasses Render free tier SMTP blocks)
+  // 1. Direct Gmail / Custom SMTP Transport (prioritized when credentials are provided in .env)
+  const smtpUser = process.env.SMTP_USER?.trim();
+  const smtpPass = process.env.SMTP_PASS?.trim();
+  if (smtpUser && smtpPass) {
+    try {
+      console.log(`[EmailService] ✉️ Dispatching real email via Gmail SMTP (${smtpUser}) to: ${to}`);
+      const transporter = await getTransporter();
+      const cleanFrom = from ? from.replace(/^"|"$/g, '').replace(/""/g, '"') : `GearUp Esports <${smtpUser}>`;
+      const sendPromise = transporter.sendMail({
+        from: cleanFrom,
+        to,
+        subject,
+        text,
+        html
+      });
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('SMTP connection timed out')), 15000)
+      );
+
+      const info = await Promise.race([sendPromise, timeoutPromise]);
+      let previewUrl = null;
+      if (nodemailer.getTestMessageUrl) {
+        previewUrl = nodemailer.getTestMessageUrl(info) || null;
+      }
+      console.log(`[EmailService] ✅ Email delivered via Gmail SMTP! MessageID: ${info.messageId}`);
+      return {
+        success: true,
+        messageId: info.messageId,
+        previewUrl,
+        provider: 'GMAIL_SMTP'
+      };
+    } catch (err) {
+      console.error(`[EmailService] ⚠️ SMTP delivery failed to ${to}: ${err.message}. Trying fallbacks...`);
+    }
+  }
+
+  // 2. Resend HTTPS API (Port 443 - fallback for hosted cloud environments like Render)
   const resendKey = process.env.RESEND_API_KEY?.trim();
   if (resendKey) {
     try {
       console.log(`[EmailService] 🚀 Dispatching email via Resend HTTPS API to: ${to}`);
-      const fromAddr = process.env.RESEND_FROM || 'GearUp Esports <onboarding@resend.dev>';
+      const rawFrom = process.env.RESEND_FROM || 'GearUp Esports <onboarding@resend.dev>';
+      const cleanFrom = rawFrom.replace(/^"|"$/g, '').replace(/""/g, '"');
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -293,7 +323,7 @@ async function deliverMail({ from, to, subject, text, html }) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: fromAddr,
+          from: cleanFrom,
           to: [to],
           subject,
           html,
@@ -312,7 +342,7 @@ async function deliverMail({ from, to, subject, text, html }) {
     }
   }
 
-  // 2. Brevo HTTPS API (Port 443)
+  // 3. Brevo HTTPS API (Port 443)
   const brevoKey = process.env.BREVO_API_KEY?.trim();
   if (brevoKey) {
     try {
@@ -343,41 +373,12 @@ async function deliverMail({ from, to, subject, text, html }) {
     }
   }
 
-  // 3. SMTP Transport (Gmail / Custom SMTP) with 4-second timeout protection
-  try {
-    const transporter = await getTransporter();
-    const sendPromise = transporter.sendMail({
-      from,
-      to,
-      subject,
-      text,
-      html
-    });
-
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('SMTP connection timed out (Render free tier blocks outbound SMTP ports 465/587)')), 4000)
-    );
-
-    const info = await Promise.race([sendPromise, timeoutPromise]);
-    let previewUrl = null;
-    if (nodemailer.getTestMessageUrl) {
-      previewUrl = nodemailer.getTestMessageUrl(info) || null;
-    }
-    return {
-      success: true,
-      messageId: info.messageId,
-      previewUrl,
-      provider: 'SMTP'
-    };
-  } catch (err) {
-    console.error(`[EmailService] ❌ Email delivery failed to ${to}: ${err.message}`);
-    return {
-      success: false,
-      error: err.message,
-      messageId: null,
-      provider: 'FAILED'
-    };
-  }
+  return {
+    success: false,
+    error: 'All email delivery channels failed',
+    messageId: null,
+    provider: 'FAILED'
+  };
 }
 
 /**
@@ -689,6 +690,41 @@ Visit http://localhost:5173 to join tournaments!
 export async function verifySmtp(forceRefresh = true) {
   if (forceRefresh) reloadEnv();
 
+  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (user && pass) {
+    try {
+      const transporter = await getTransporter(forceRefresh);
+      if (transporter && typeof transporter.verify === 'function') {
+        const verifyPromise = transporter.verify();
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('SMTP timeout')), 15000)
+        );
+        await Promise.race([verifyPromise, timeoutPromise]);
+      }
+      return {
+        connected: true,
+        mode: 'GMAIL_SMTP',
+        provider: host,
+        user,
+        message: `Successfully authenticated with Gmail SMTP as ${user}! Delivering real emails to player inboxes.`
+      };
+    } catch (err) {
+      const isAppPassReq = err.responseCode === 534 || err.responseCode === 535 || err.message?.includes('Application-specific') || err.message?.includes('BadCredentials');
+      return {
+        connected: false,
+        mode: 'FAILED',
+        error: err.message,
+        code: err.responseCode || err.code,
+        help: isAppPassReq
+          ? 'Google requires a 16-letter App Password because 2-Step Verification is active. Generate one at https://myaccount.google.com/apppasswords and paste it into SMTP_PASS in .env'
+          : 'Failed to authenticate with SMTP server. Check credentials in .env.'
+      };
+    }
+  }
+
   if (process.env.RESEND_API_KEY?.trim()) {
     return {
       connected: true,
@@ -707,46 +743,11 @@ export async function verifySmtp(forceRefresh = true) {
     };
   }
 
-  const host = process.env.SMTP_HOST;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-
-  if (!host || !user || !pass) {
-    return {
-      connected: false,
-      mode: 'ETHEREAL_SANDBOX',
-      message: 'No SMTP credentials in .env. Using simulated delivery with on-screen verification codes.'
-    };
-  }
-
-  try {
-    const transporter = await getTransporter(forceRefresh);
-    if (transporter && typeof transporter.verify === 'function') {
-      const verifyPromise = transporter.verify();
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('SMTP timeout (Render free tier blocks ports 465/587. Add RESEND_API_KEY to send emails via port 443)')), 4000)
-      );
-      await Promise.race([verifyPromise, timeoutPromise]);
-    }
-    return {
-      connected: true,
-      mode: 'REAL_SMTP',
-      provider: host,
-      user,
-      message: `Successfully authenticated with ${host} as ${user}!`
-    };
-  } catch (err) {
-    const isAppPassReq = err.responseCode === 534 || err.responseCode === 535 || err.message?.includes('Application-specific') || err.message?.includes('BadCredentials');
-    return {
-      connected: false,
-      mode: 'FAILED',
-      error: err.message,
-      code: err.responseCode || err.code,
-      help: isAppPassReq
-        ? 'Google requires a 16-letter App Password because 2-Step Verification is active. Generate one at https://myaccount.google.com/apppasswords and paste it into SMTP_PASS in .env'
-        : 'Note: Cloud hosts like Render free tier block outbound SMTP ports 465/587. Add RESEND_API_KEY to your Render Environment to send emails via HTTPS port 443.'
-    };
-  }
+  return {
+    connected: false,
+    mode: 'ETHEREAL_SANDBOX',
+    message: 'No SMTP credentials in .env. Using simulated delivery with on-screen verification codes.'
+  };
 }
 
 /**
